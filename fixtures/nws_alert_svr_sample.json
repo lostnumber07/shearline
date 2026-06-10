@@ -1,0 +1,141 @@
+{
+  "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f65dcc1b150bd22fd4871aaa1c6574e9f39bf6de.001.1",
+  "type": "Feature",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -93.6,
+          40.41
+        ],
+        [
+          -93.68,
+          39.92
+        ],
+        [
+          -94.36,
+          39.89
+        ],
+        [
+          -94.26,
+          40.21
+        ],
+        [
+          -93.6,
+          40.41
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.f65dcc1b150bd22fd4871aaa1c6574e9f39bf6de.001.1",
+    "@type": "wx:Alert",
+    "id": "urn:oid:2.49.0.1.840.0.f65dcc1b150bd22fd4871aaa1c6574e9f39bf6de.001.1",
+    "areaDesc": "Daviess, MO; DeKalb, MO; Gentry, MO; Grundy, MO; Harrison, MO; Livingston, MO; Mercer, MO",
+    "geocode": {
+      "SAME": [
+        "029061",
+        "029063",
+        "029075",
+        "029079",
+        "029081",
+        "029117",
+        "029129"
+      ],
+      "UGC": [
+        "MOC061",
+        "MOC063",
+        "MOC075",
+        "MOC079",
+        "MOC081",
+        "MOC117",
+        "MOC129"
+      ]
+    },
+    "affectedZones": [
+      "https://api.weather.gov/zones/county/MOC061",
+      "https://api.weather.gov/zones/county/MOC063",
+      "https://api.weather.gov/zones/county/MOC075",
+      "https://api.weather.gov/zones/county/MOC079",
+      "https://api.weather.gov/zones/county/MOC081",
+      "https://api.weather.gov/zones/county/MOC117",
+      "https://api.weather.gov/zones/county/MOC129"
+    ],
+    "references": [],
+    "sent": "2026-06-10T16:28:00-05:00",
+    "effective": "2026-06-10T16:28:00-05:00",
+    "onset": "2026-06-10T16:28:00-05:00",
+    "expires": "2026-06-10T17:30:00-05:00",
+    "ends": "2026-06-10T17:30:00-05:00",
+    "status": "Actual",
+    "messageType": "Alert",
+    "category": "Met",
+    "severity": "Severe",
+    "certainty": "Observed",
+    "urgency": "Immediate",
+    "event": "Severe Thunderstorm Warning",
+    "sender": "w-nws.webmaster@noaa.gov",
+    "senderName": "NWS Kansas City/Pleasant Hill MO",
+    "headline": "Severe Thunderstorm Warning issued June 10 at 4:28PM CDT until June 10 at 5:30PM CDT by NWS Kansas City/Pleasant Hill MO",
+    "description": "SVREAX\n\nThe National Weather Service in Pleasant Hill has issued a\n\n* Severe Thunderstorm Warning for...\nDaviess County in north central Missouri...\nWestern Grundy County in north central Missouri...\nSoutheastern Gentry County in northwestern Missouri...\nSouthwestern Mercer County in north central Missouri...\nSouthern Harrison County in north central Missouri...\nNortheastern DeKalb County in northwestern Missouri...\nNorthwestern Livingston County in north central Missouri...\n\n* Until 530 PM CDT.\n\n* At 428 PM CDT, severe thunderstorms were located along a line\nextending from 6 miles north of Pattonsburg to 8 miles northeast of\nMaysville, moving northeast at 45 mph.\n\nHAZARD...Golf ball size hail and 60 mph wind gusts.\n\nSOURCE...Radar indicated.\n\nIMPACT...People and animals outdoors will be injured. Expect hail\ndamage to roofs, siding, windows, and vehicles. Expect\nwind damage to roofs, siding, and trees.\n\n* Locations impacted include...\nBethany, Gallatin, Maysville, Princeton, Jamesport, Gilman City,\nPattonsburg, Coffey, Jameson, Weatherby, Mcfall, Mount Moriah,\nBrimson, Modena, and Santa Rosa.\n\nThis includes Interstate 35 in Missouri between mile markers 65 and\n93.",
+    "instruction": "Remain alert for a possible tornado! Tornadoes can develop quickly\nfrom severe thunderstorms. If you spot a tornado go at once into the\nbasement or small central room in a sturdy structure.\n\nFor your protection move to an interior room on the lowest floor of a\nbuilding.\n\nA Tornado Watch remains in effect until 900 PM CDT for north central\nand northwestern Missouri.",
+    "response": "Shelter",
+    "note": null,
+    "parameters": {
+      "AWIPSidentifier": [
+        "SVREAX"
+      ],
+      "WMOidentifier": [
+        "WUUS53 KEAX 102128"
+      ],
+      "eventMotionDescription": [
+        "2026-06-10T21:28:00-00:00...storm...240DEG...41KT...40.15,-94.16 39.96,-94.24"
+      ],
+      "windThreat": [
+        "RADAR INDICATED"
+      ],
+      "maxWindGust": [
+        "60 MPH"
+      ],
+      "hailThreat": [
+        "RADAR INDICATED"
+      ],
+      "maxHailSize": [
+        "1.75"
+      ],
+      "thunderstormDamageThreat": [
+        "CONSIDERABLE"
+      ],
+      "tornadoDetection": [
+        "POSSIBLE"
+      ],
+      "BLOCKCHANNEL": [
+        "EAS",
+        "NWEM",
+        "CMAS"
+      ],
+      "EAS-ORG": [
+        "WXR"
+      ],
+      "VTEC": [
+        "/O.NEW.KEAX.SV.W.0334.260610T2128Z-260610T2230Z/"
+      ],
+      "eventEndingTime": [
+        "2026-06-10T17:30:00-05:00"
+      ]
+    },
+    "scope": "Public",
+    "code": "IPAWSv1.0",
+    "language": "en-US",
+    "web": "http://www.weather.gov",
+    "eventCode": {
+      "SAME": [
+        "SVR"
+      ],
+      "NationalWeatherService": [
+        "SVW"
+      ]
+    }
+  }
+}
