@@ -1,0 +1,72 @@
+{
+  "verified_utc": "2026-06-10T21:45Z",
+  "CRITICAL_bucket_change": {
+    "old_bucket": "noaa-nexrad-level2",
+    "old_bucket_status": "DEAD since 2025-09-01: every request (list, HEAD, GET, path-style, v1) returns 403 AccessDenied as of 2026-06-10",
+    "current_archive_bucket": "unidata-nexrad-level2",
+    "current_realtime_chunks_bucket": "unidata-nexrad-level2-chunks",
+    "region": "us-east-1",
+    "auth": "anonymous works for ListObjectsV2, GetObject, and Range GETs (botocore Config(signature_version=UNSIGNED))",
+    "source": "https://registry.opendata.aws/noaa-nexrad/ (deprecation notice verified live)"
+  },
+  "archive_bucket_layout": {
+    "prefix_structure": "YYYY/MM/DD/SSSS/  (4-digit year, zero-padded month/day, 4-char ICAO uppercase)",
+    "root_prefixes_observed": ["1970/", "1991/", "1992/", "...through 2026/"],
+    "stations_under_2026_06_10": 202,
+    "key_format": "YYYY/MM/DD/SSSS/SSSSYYYYMMDD_HHMMSS_Vnn[_MDM]",
+    "timestamp_meaning": "volume scan START time, UTC, encoded in the filename; verified against the 24-byte Archive II header (julian date/ms fields decoded to the same 2026-06-10 21:29:28.502 UTC)",
+    "observed_sample_keys": [
+      "2026/06/10/KTLX/KTLX20260610_212928_V06 (size 6358651, LastModified 2026-06-10T21:36:23Z)",
+      "2026/06/10/KTLX/KTLX20260610_205455_V06_MDM (size 678652)",
+      "2026/06/10/TLAS/TLAS20260610_181508_V08.001 (size 268, anomalous fragment - ignore)"
+    ],
+    "suffixes_observed_2026_06_10_all_stations": {
+      "_V06": 33601,
+      "_V06_MDM": 2936,
+      "_V08": 9610,
+      "_V08_MDM": 931,
+      "_V08.001": 1
+    },
+    "V06_vs_V08": "ALL 45 sites uploading _V08 today are TDWR terminal radars (T-prefix: TOKC, TJFK, TDFW, ...). All 157 WSR-88D sites (K*, P*, RKSG, TJUA, LPLA) upload _V06. TJUA is a WSR-88D despite the T prefix and uploads _V06.",
+    "MDM_files": "Model Data Message files, ~680-714 KB, roughly hourly (21 for KTLX today vs 213 volumes). NOT radar volumes - filter them out. Suffix is appended AFTER the version: _V06_MDM.",
+    "volume_file_sizes_KTLX_today": {"n": 213, "min": 4118205, "median": 5892957, "max": 7019951, "note": "~4-7 MB per volume in quiet weather, VCP 35"},
+    "cadence_KTLX_today": "~7 min between volumes (VCP 35 clear-air); VCP 12/212 in severe weather is ~4.5 min",
+    "upload_lag": "object appears ~7 min after the filename timestamp (i.e., when the volume COMPLETES); LastModified - filename_time ~= volume duration"
+  },
+  "latest_complete_volume_logic": {
+    "recipe": [
+      "1. d = today UTC; list_objects_v2(Bucket='unidata-nexrad-level2', Prefix=f'{d:%Y/%m/%d}/{site}/') with paginator",
+      "2. keep keys matching suffix _V06 or _V08 exactly (reject _MDM and anything with a further extension like _V08.001)",
+      "3. lexicographic max of remaining keys IS the newest (zero-padded timestamps sort correctly)",
+      "4. if today's prefix is empty (just after 00Z, or site down), fall back to yesterday's prefix",
+      "5. any object present is a COMPLETE volume - partials are never visible in the archive bucket; staleness is at most one volume duration (~4.5-7 min) plus upload"
+    ],
+    "realtime_alternative": "unidata-nexrad-level2-chunks has per-volume chunks: SSSS/VVV/YYYYMMDD-HHMMSS-CCC-T where VVV = 3-digit rolling volume number (wraps; KTLX showed 327-336+), CCC = chunk sequence, T = S(start)/I(intermediate)/E(end). Old volume dirs persist for days, so 'latest' requires comparing chunk timestamps, not dir numbers. Not needed for a metadata-only tool."
+  },
+  "station_table": {
+    "url": "https://www.ncei.noaa.gov/access/homr/file/nexrad-stations.txt",
+    "status": "HTTP 200, text/plain, 40916 bytes, 212 lines (header + dash ruler + 210 data rows)",
+    "format": "fixed-width; derive column spans from the dash ruler on line 2",
+    "column_spans_0_indexed": {
+      "NCDCID": [0, 8], "ICAO": [9, 13], "WBAN": [14, 19], "NAME": [20, 50],
+      "COUNTRY": [51, 71], "ST": [72, 74], "COUNTY": [75, 105],
+      "LAT": [106, 115], "LON": [116, 126], "ELEV": [127, 133],
+      "UTC": [134, 139], "STNTYPE": [140, 190]
+    },
+    "counts": {"NEXRAD": 163, "TDWR": 47, "total": 210},
+    "KTLX_row": {"NCDCID": "30001926", "ICAO": "KTLX", "WBAN": "03979", "NAME": "OKLAHOMA CITY", "ST": "OK", "LAT": 35.333361, "LON": -97.277761, "ELEV": 1278, "UTC": "-6", "STNTYPE": "NEXRAD"},
+    "units": "LAT/LON decimal degrees (negative = W); ELEV is FEET (KABX=5951 ft matches Albuquerque radar ~1789 m); UTC is offset hours",
+    "parsing_gotchas": [
+      "ST and COUNTY are blank for overseas sites (LPLA Azores, RKJK/RKSG Korea, RODN Japan) - parser must tolerate empty fields",
+      "filter STNTYPE=='NEXRAD' for WSR-88D nearest-site lookup; do NOT filter by ICAO first letter (TJUA is NEXRAD, T-prefix)",
+      "all 210 rows have parseable floats for LAT/LON (verified)",
+      "LON column is 10 chars so precision is ~5-6 decimals"
+    ]
+  },
+  "level2_header_reading_without_pyart": {
+    "volume_header_24_bytes": "Range GET bytes=0-23: struct '>9s3sII4s' -> tape ('AR2V0006.'), extension number ('745'), days since 1970-01-01 (+1), ms since midnight, ICAO. Verified on live KTLX volume.",
+    "cheap_VCP_extraction": "bytes 24-27 = big-endian int32 compressed size of the metadata LDM record (2356 bytes observed); Range GET that many bytes from offset 28; bz2.decompress -> 134 messages x 2432 bytes; message type at byte offset 15 of each 2432-byte message; message type 5 (VCP data) carries pattern number at data offset +4 (bytes 32-34 of the message). Verified: returned VCP 35, matching MetPy. Total download ~2.4 KB.",
+    "metpy_level2file": "metpy.io.Level2File (ALREADY in venv) parses the FULL volume: 1.6 s download (6.4 MB) + 1.8 s parse for KTLX. Gives f.stid, f.dt, f.vcp_info.num (35), f.sweeps (12 sweeps). Moments per ray at ray[4] dict keyed by bytes (b'REF', b'ZDR', b'PHI', b'RHO', b'CFP'); ray[4][b'REF'] = (DataBlockHdr(num_gates=1832, first_gate=2.125, gate_width=0.25, ...), float64 ndarray with NaN gaps). Max REF today: 37.5 dBZ. Emits harmless 'Unknown message: 32' warning.",
+    "verdict": "NO Py-ART or nexradaws needed. VCP: ~2.4 KB via manual range-GET parse, or full MetPy parse. Max dBZ: requires full volume download + MetPy parse (~3.5 s total)."
+  }
+}

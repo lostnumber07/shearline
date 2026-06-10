@@ -1,0 +1,13 @@
+{
+ "transport": "streamable-http",
+ "url": "http://127.0.0.1:8765/mcp",
+ "serverInfo": {
+  "name": "smoke",
+  "version": "1.27.2"
+ },
+ "protocolVersion": "2025-11-25",
+ "call_wx_structuredContent": {
+  "temperature_c": 22.5,
+  "condition": "sunny"
+ }
+}

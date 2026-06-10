@@ -1,0 +1,110 @@
+{
+ "transport": "stdio",
+ "tools": [
+  {
+   "name": "add",
+   "inputSchema": {
+    "properties": {
+     "a": {
+      "title": "A",
+      "type": "integer"
+     },
+     "b": {
+      "title": "B",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "a",
+     "b"
+    ],
+    "title": "addArguments",
+    "type": "object"
+   },
+   "outputSchema": {
+    "properties": {
+     "result": {
+      "title": "Result",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "result"
+    ],
+    "title": "addOutput",
+    "type": "object"
+   }
+  },
+  {
+   "name": "wx",
+   "inputSchema": {
+    "properties": {
+     "city": {
+      "title": "City",
+      "type": "string"
+     }
+    },
+    "required": [
+     "city"
+    ],
+    "title": "wxArguments",
+    "type": "object"
+   },
+   "outputSchema": {
+    "description": "Structured weather payload.",
+    "properties": {
+     "temperature_c": {
+      "description": "Temperature in Celsius",
+      "title": "Temperature C",
+      "type": "number"
+     },
+     "condition": {
+      "title": "Condition",
+      "type": "string"
+     }
+    },
+    "required": [
+     "temperature_c",
+     "condition"
+    ],
+    "title": "WeatherData",
+    "type": "object"
+   }
+  },
+  {
+   "name": "stats",
+   "inputSchema": {
+    "properties": {},
+    "title": "statsArguments",
+    "type": "object"
+   },
+   "outputSchema": {
+    "additionalProperties": {
+     "type": "number"
+    },
+    "title": "statsDictOutput",
+    "type": "object"
+   }
+  }
+ ],
+ "call_add": {
+  "structuredContent": {
+   "result": 5
+  },
+  "text": "5",
+  "isError": false
+ },
+ "call_wx": {
+  "structuredContent": {
+   "temperature_c": 22.5,
+   "condition": "sunny"
+  },
+  "text": "{\n  \"temperature_c\": 22.5,\n  \"condition\": \"sunny\"\n}"
+ },
+ "call_stats": {
+  "structuredContent": {
+   "mean": 1.5,
+   "max": 9.0
+  }
+ }
+}

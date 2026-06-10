@@ -1,0 +1,194 @@
+{
+  "source": "nomads-rap",
+  "verified_utc": "2026-06-10T21:40Z",
+  "file_pattern": "rap.tHHz.awp130pgrbf00.grib2 (+ .idx) under https://nomads.ncep.noaa.gov/pub/data/nccf/com/rap/prod/rap.YYYYMMDD/  HH=00..23, awp130=13km CONUS Lambert grid",
+  "latest_cycle_logic": "f00 for cycle HH appears ~48 min after HH:00 UTC (t20z file Last-Modified 20:47:52Z). Robust pick: for hour in [now_utc.hour, -1, -2, -3] (handle day rollover into previous rap.YYYYMMDD dir): HEAD .grib2 (HTTP 200 + Content-Length ~18.3 MB) AND .idx -> first success wins. filter_rap.pl itself returns HTTP 404 with HTML body 'data file is not present' for missing cycles, so probing via the filter also works.",
+  "grib_filter": {
+    "endpoint": "https://nomads.ncep.noaa.gov/cgi-bin/filter_rap.pl",
+    "params": "dir=%2Frap.YYYYMMDD & file=rap.tHHz.awp130pgrbf00.grib2 & var_X=on... & lev_Y=on... & subregion= & leftlon=&rightlon=&toplat=&bottomlat= (negative longitudes accepted)",
+    "warning": "dir+file WITHOUT any var_/lev_ params returns the ENTIRE 18 MB grib2 file (HTTP 200), not an HTML form",
+    "vars_used": [
+      "TMP",
+      "DPT",
+      "RH",
+      "HGT",
+      "UGRD",
+      "VGRD",
+      "PRES",
+      "CAPE",
+      "CIN",
+      "HLCY",
+      "USTM",
+      "VSTM"
+    ],
+    "levs_used": [
+      "lev_100_mb ... lev_1000_mb (37 levels, 25-mb steps)",
+      "lev_surface",
+      "lev_2_m_above_ground",
+      "lev_10_m_above_ground",
+      "lev_90-0_mb_above_ground",
+      "lev_180-0_mb_above_ground",
+      "lev_255-0_mb_above_ground",
+      "lev_1000-0_m_above_ground",
+      "lev_3000-0_m_above_ground",
+      "lev_0-6000_m_above_ground"
+    ],
+    "moore_subset_observed": "84273 bytes, 5.6 s total (2.1 s server time-to-first-byte)"
+  },
+  "idx_facts": {
+    "moisture_on_pressure_levels": "RH only (37 levels). DPT exists ONLY at 2 m; SPFH only at 2 m and 80 m. Compute dewpoint aloft from T+RH (MetPy dewpoint_from_relative_humidity).",
+    "isobaric_vars": [
+      "TMP",
+      "HGT",
+      "RH",
+      "UGRD",
+      "VGRD"
+    ],
+    "cape_cin_layers": [
+      "surface",
+      "90-0 mb above ground",
+      "180-0 mb above ground",
+      "255-0 mb above ground",
+      "(also CAPE 0-3000 m layer exists)"
+    ],
+    "hlcy_layers": [
+      "3000-0 m above ground",
+      "1000-0 m above ground"
+    ],
+    "storm_motion": "USTM/VSTM at 0-6000 m above ground (single .idx line '241.1/241.2' - two fields share one GRIB message offset)"
+  },
+  "decode_recipe": {
+    "engine": "xarray.open_dataset(path, engine='cfgrib', backend_kwargs={'filter_by_keys': {...}, 'indexpath': ''})",
+    "groups": {
+      "isobaricInhPa": {
+        "filter": {
+          "typeOfLevel": "isobaricInhPa"
+        },
+        "vars": {
+          "t": "K",
+          "u": "m s**-1",
+          "v": "m s**-1",
+          "gh": "gpm",
+          "r": "%"
+        },
+        "level_coord": "isobaricInhPa, hPa, ordered 1000.0 -> 100.0 (index 0 = 1000 hPa, bottom-up)",
+        "shape": "(37, y=17, x=14) for the 2x2 deg Moore box"
+      },
+      "surface": {
+        "filter": {
+          "typeOfLevel": "surface"
+        },
+        "vars": {
+          "sp": "Pa (surface pressure - NOT named pres)",
+          "orog": "m (this is HGT:surface)",
+          "t": "K (skin temp, rides along with var_TMP)",
+          "cape": "J kg**-1",
+          "cin": "J kg**-1"
+        }
+      },
+      "2m": {
+        "filter": {
+          "typeOfLevel": "heightAboveGround",
+          "level": 2
+        },
+        "vars": {
+          "t2m": "K",
+          "d2m": "K",
+          "r2": "%"
+        }
+      },
+      "10m": {
+        "filter": {
+          "typeOfLevel": "heightAboveGround",
+          "level": 10
+        },
+        "vars": {
+          "u10": "m s**-1",
+          "v10": "m s**-1"
+        }
+      },
+      "hlcy": {
+        "filter": {
+          "typeOfLevel": "heightAboveGroundLayer",
+          "shortName": "hlcy"
+        },
+        "vars": {
+          "hlcy": "m**2 s**-2"
+        },
+        "level_coord": "heightAboveGroundLayer = [1000.0, 3000.0] (= 0-1 km and 0-3 km SRH)"
+      },
+      "ustm": {
+        "filter": {
+          "typeOfLevel": "heightAboveGroundLayer",
+          "shortName": "ustm"
+        },
+        "vars": {
+          "ustm": "m s**-1"
+        },
+        "note": "level coord reads 0.0 (layer metadata lost); it is the 0-6000 m layer"
+      },
+      "vstm": {
+        "filter": {
+          "typeOfLevel": "heightAboveGroundLayer",
+          "shortName": "vstm"
+        },
+        "vars": {
+          "vstm": "m s**-1"
+        }
+      },
+      "mixed_layer_cape_cin": {
+        "filter": {
+          "typeOfLevel": "pressureFromGroundLayer"
+        },
+        "vars": {
+          "cape": "J kg**-1",
+          "cin": "J kg**-1"
+        },
+        "level_coord": "pressureFromGroundLayer = [9000.0, 18000.0, 25500.0] Pa = 90-0 / 180-0 / 255-0 mb AGL layers"
+      }
+    },
+    "silent_data_loss_traps": [
+      "filter_by_keys={'typeOfLevel':'heightAboveGround'} alone returns ONLY t2m/d2m/r2 and SILENTLY drops u10/v10 (conflicting level values) - must filter level=2 and level=10 separately",
+      "filter_by_keys={'typeOfLevel':'heightAboveGroundLayer'} alone returns ONLY hlcy and SILENTLY drops ustm/vstm - filter shortName per variable"
+    ],
+    "grid": {
+      "gridType": "lambert",
+      "dims": "(y, x) with 2-D latitude/longitude coords",
+      "lon_convention": "0-360 degrees east in decoded coords (261.44..263.40 for -98.5..-96.5W) even though the filter request used negative lons",
+      "point_extraction": "nearest gridpoint via argmin((lat-lat0)**2 + (lon - lon0%360)**2); Moore 35.34,-97.49 -> y=8,x=7 lat=35.341 lon=262.503"
+    },
+    "time": {
+      "time": "2026-06-10T20:00 (cycle)",
+      "step": "0",
+      "valid_time": "== time for f00"
+    }
+  },
+  "sample_values_moore_gridpoint": {
+    "t2m_K": 306.78,
+    "d2m_K": 292.94,
+    "u10_ms": 2.17,
+    "v10_ms": 9.5,
+    "sp_Pa": 96447.8,
+    "orog_m": 377.8,
+    "sfc_cape_Jkg": 2000.0,
+    "sfc_cin_Jkg": -131.9,
+    "ml_cape_by_layer_Pa": {
+      "9000": 1350.0,
+      "18000": 1580.0,
+      "25500": 2000.0
+    },
+    "ml_cin_by_layer_Pa": {
+      "9000": -232.6,
+      "18000": -191.1,
+      "25500": -131.6
+    },
+    "srh_0_1km_m2s2": 29.9,
+    "srh_0_3km_m2s2": 211.0,
+    "ustm_ms": 1.66,
+    "vstm_ms": 2.37,
+    "t_1000mb_K": 306.8,
+    "t_100mb_K": 205.3,
+    "metpy_sbcape_check_Jkg": 2157.0,
+    "metpy_sbcin_check_Jkg": -135.0
+  }
+}

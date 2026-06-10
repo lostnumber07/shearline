@@ -1,0 +1,130 @@
+{
+  "_meta": {
+    "source": "mrms-s3",
+    "bucket": "noaa-mrms-pds",
+    "access": "anonymous (botocore UNSIGNED), region us-east-1",
+    "verified_utc": "2026-06-10T21:32Z",
+    "key_format": "CONUS/<ProductPrefixName>/<YYYYMMDD>/MRMS_<ProductPrefixName>_<YYYYMMDD-HHMMSS>.grib2.gz",
+    "notes": [
+      "Per-product folders contain one YYYYMMDD subfolder per day; keys inside sort lexicographically by timestamp.",
+      "All grids are regular lat/lon, lats DESCENDING (jScansPositively=0, north-to-south), lons 0-360 East convention (230.0->300.0 = 130W->60W).",
+      "GRIB2 uses NOAA MRMS local tables: discipline 209; cfgrib decodes variable as 'unknown' with units 'unknown'. Identify products by (discipline, parameterCategory, parameterNumber) per https://www.nssl.noaa.gov/projects/mrms/operational/tables.php",
+      "Packing is grid_png; level is heightAboveSea=500 m for all products here; eccodes warns 'Truncating time: non-zero seconds' on files with non-:00 second timestamps (harmless).",
+      "grid values below: ny x nx, lat_first/lat_last = first/last grid point centers (descending), lon in 0-360 degrees East."
+    ]
+  },
+  "MESH": {
+    "prefix": "CONUS/MESH_00.50/",
+    "sample_key": "CONUS/MESH_00.50/20260610/MRMS_MESH_00.50_20260610-213040.grib2.gz",
+    "grib_param": {"discipline": 209, "parameterCategory": 3, "parameterNumber": 28},
+    "grid": {"ny": 3500, "nx": 7000, "dlat": 0.01, "dlon": 0.01, "lat_first": 54.995, "lat_last": 20.005, "lon_first": 230.005, "lon_last": 299.995, "lat_order": "descending", "lon_convention": "0-360E"},
+    "units": "mm",
+    "sentinels": {"-3": "no coverage", "-1": "missing/no data (table 'Missing' value)"},
+    "size_gz": 81601,
+    "size_decoded": 115851,
+    "cadence": "~2 min, irregular seconds (e.g. -212438, -212638, -212839, -213040); 645 keys by 21:30Z"
+  },
+  "MESH_Max_30min": {
+    "prefix": "CONUS/MESH_Max_30min_00.50/",
+    "sample_key": "CONUS/MESH_Max_30min_00.50/20260610/MRMS_MESH_Max_30min_00.50_20260610-213000.grib2.gz",
+    "grib_param": {"discipline": 209, "parameterCategory": 3, "parameterNumber": 29},
+    "grid": {"ny": 3500, "nx": 7000, "dlat": 0.01, "dlon": 0.01, "lat_first": 54.995, "lat_last": 20.005, "lon_first": 230.005, "lon_last": 299.995, "lat_order": "descending", "lon_convention": "0-360E"},
+    "units": "mm",
+    "sentinels": {"-3": "no coverage", "-1": "missing/no data"},
+    "size_gz": 171624,
+    "cadence": "2 min on even minutes, seconds always :00 (e.g. -213000)"
+  },
+  "MESH_Max_60min": {
+    "prefix": "CONUS/MESH_Max_60min_00.50/",
+    "sample_key": "CONUS/MESH_Max_60min_00.50/20260610/MRMS_MESH_Max_60min_00.50_20260610-213000.grib2.gz",
+    "grib_param": {"discipline": 209, "parameterCategory": 3, "parameterNumber": 30},
+    "grid": {"ny": 3500, "nx": 7000, "dlat": 0.01, "dlon": 0.01, "lat_first": 54.995, "lat_last": 20.005, "lon_first": 230.005, "lon_last": 299.995, "lat_order": "descending", "lon_convention": "0-360E"},
+    "units": "mm",
+    "sentinels": {"-3": "no coverage", "-1": "missing/no data"},
+    "size_gz": 243778,
+    "cadence": "2 min on even minutes, seconds :00"
+  },
+  "RotationTrack30min": {
+    "prefix": "CONUS/RotationTrack30min_00.50/",
+    "sample_key": "CONUS/RotationTrack30min_00.50/20260610/MRMS_RotationTrack30min_00.50_20260610-213000.grib2.gz",
+    "grib_param": {"discipline": 209, "parameterCategory": 3, "parameterNumber": 2},
+    "grid": {"ny": 7000, "nx": 14000, "dlat": 0.005, "dlon": 0.005, "lat_first": 54.9975, "lat_last": 20.0025, "lon_first": 230.0025, "lon_last": 299.9975, "lat_order": "descending", "lon_convention": "0-360E"},
+    "units": "0.001/s (value 23.0 = 0.023 s^-1 azimuthal shear, 0-2 km AGL)",
+    "sentinels": {"0": "missing AND no-coverage AND no-rotation are all 0 (table 'Missing'=0); no negative sentinels observed"},
+    "size_gz": 229105,
+    "cadence": "2 min on even minutes, seconds :00"
+  },
+  "RotationTrack60min": {
+    "prefix": "CONUS/RotationTrack60min_00.50/",
+    "sample_key": "CONUS/RotationTrack60min_00.50/20260610/MRMS_RotationTrack60min_00.50_20260610-213000.grib2.gz",
+    "grib_param": {"discipline": 209, "parameterCategory": 3, "parameterNumber": 3},
+    "grid": {"ny": 7000, "nx": 14000, "dlat": 0.005, "dlon": 0.005, "lat_first": 54.9975, "lat_last": 20.0025, "lon_first": 230.0025, "lon_last": 299.9975, "lat_order": "descending", "lon_convention": "0-360E"},
+    "units": "0.001/s (0-2 km AGL low-level rotation)",
+    "sentinels": {"0": "missing/no-coverage/no-rotation all 0"},
+    "size_gz": 336451,
+    "cadence": "2 min on even minutes, seconds :00"
+  },
+  "RotationTrackML30min": {
+    "prefix": "CONUS/RotationTrackML30min_00.50/",
+    "sample_key": "CONUS/RotationTrackML30min_00.50/20260610/MRMS_RotationTrackML30min_00.50_20260610-213000.grib2.gz",
+    "grib_param": {"discipline": 209, "parameterCategory": 3, "parameterNumber": 14},
+    "grid": {"ny": 7000, "nx": 14000, "dlat": 0.005, "dlon": 0.005, "lat_first": 54.9975, "lat_last": 20.0025, "lon_first": 230.0025, "lon_last": 299.9975, "lat_order": "descending", "lon_convention": "0-360E"},
+    "units": "0.001/s (3-6 km AGL mid-level rotation)",
+    "sentinels": {"0": "missing/no-coverage/no-rotation all 0"},
+    "size_gz": 189732,
+    "cadence": "2 min on even minutes, seconds :00"
+  },
+  "RotationTrackML60min": {
+    "prefix": "CONUS/RotationTrackML60min_00.50/",
+    "sample_key": "CONUS/RotationTrackML60min_00.50/20260610/MRMS_RotationTrackML60min_00.50_20260610-213000.grib2.gz",
+    "grib_param": {"discipline": 209, "parameterCategory": 3, "parameterNumber": 15},
+    "grid": {"ny": 7000, "nx": 14000, "dlat": 0.005, "dlon": 0.005, "lat_first": 54.9975, "lat_last": 20.0025, "lon_first": 230.0025, "lon_last": 299.9975, "lat_order": "descending", "lon_convention": "0-360E"},
+    "units": "0.001/s (3-6 km AGL mid-level rotation; observed integer-quantized values 3-23 = 0.003-0.023 s^-1)",
+    "sentinels": {"0": "missing/no-coverage/no-rotation all 0; 97.7M of 98M cells were 0"},
+    "size_gz": 278223,
+    "size_decoded": 354679,
+    "cadence": "2 min on even minutes, seconds :00; 646 keys by 21:30Z"
+  },
+  "MergedReflectivityQCComposite": {
+    "prefix": "CONUS/MergedReflectivityQCComposite_00.50/",
+    "sample_key": "CONUS/MergedReflectivityQCComposite_00.50/20260610/MRMS_MergedReflectivityQCComposite_00.50_20260610-213040.grib2.gz",
+    "grib_param": {"discipline": 209, "parameterCategory": 10, "parameterNumber": 0},
+    "grid": {"ny": 3500, "nx": 7000, "dlat": 0.01, "dlon": 0.01, "lat_first": 54.995, "lat_last": 20.005, "lon_first": 230.005, "lon_last": 299.995, "lat_order": "descending", "lon_convention": "0-360E"},
+    "units": "dBZ",
+    "sentinels": {"-999": "no coverage (observed)", "-99": "missing (table 'Missing' value, observed)", "note": "real data starts at -15.5 dBZ; observed max 66.5 dBZ"},
+    "size_gz": 1885639,
+    "size_decoded": 1934462,
+    "cadence": "~2 min, irregular seconds matching MESH timestamps (e.g. -213040)"
+  },
+  "VIL": {
+    "prefix": "CONUS/VIL_00.50/",
+    "sample_key": "CONUS/VIL_00.50/20260610/MRMS_VIL_00.50_20260610-213040.grib2.gz",
+    "grib_param": {"discipline": 209, "parameterCategory": 3, "parameterNumber": 41},
+    "grid": {"ny": 3500, "nx": 7000, "dlat": 0.01, "dlon": 0.01, "lat_first": 54.995, "lat_last": 20.005, "lon_first": 230.005, "lon_last": 299.995, "lat_order": "descending", "lon_convention": "0-360E"},
+    "units": "kg/m2",
+    "sentinels": {"-3": "no coverage (observed)", "-1": "missing (table value, observed)"},
+    "size_gz": 897493,
+    "size_decoded": 931202,
+    "cadence": "~2 min, irregular seconds"
+  },
+  "VIL_Density": {
+    "prefix": "CONUS/VIL_Density_00.50/",
+    "sample_key": "CONUS/VIL_Density_00.50/20260610/MRMS_VIL_Density_00.50_20260610-213040.grib2.gz",
+    "grib_param": {"discipline": 209, "parameterCategory": 3, "parameterNumber": 42},
+    "grid": {"ny": 3500, "nx": 7000, "dlat": 0.01, "dlon": 0.01, "lat_first": 54.995, "lat_last": 20.005, "lon_first": 230.005, "lon_last": 299.995, "lat_order": "descending", "lon_convention": "0-360E"},
+    "units": "g/m3",
+    "sentinels": {"-3": "no coverage", "-1": "missing"},
+    "size_gz": 346667,
+    "cadence": "~2 min, irregular seconds"
+  },
+  "VIL_Max_120min": {
+    "prefix": "CONUS/VIL_Max_120min_00.50/",
+    "sample_key": "CONUS/VIL_Max_120min_00.50/20260610/MRMS_VIL_Max_120min_00.50_20260610-210000.grib2.gz",
+    "grib_param": {"discipline": 209, "parameterCategory": 3, "parameterNumber": 37},
+    "grid": {"ny": 3500, "nx": 7000, "dlat": 0.01, "dlon": 0.01, "lat_first": 54.995, "lat_last": 20.005, "lon_first": 230.005, "lon_last": 299.995, "lat_order": "descending", "lon_convention": "0-360E"},
+    "units": "kg/m2",
+    "sentinels": {"-3": "no coverage", "-1": "missing"},
+    "size_gz": 1930967,
+    "cadence": "30 min on :00 and :30 (e.g. -193000, -200000, -203000, -210000); only 43 keys by 21:00Z"
+  }
+}
