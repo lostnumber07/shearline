@@ -14,6 +14,7 @@ Empirically verified 2026-06-10:
 import asyncio
 import math
 import re
+import threading
 from datetime import UTC, datetime, timedelta
 from functools import lru_cache
 from importlib import resources
@@ -36,18 +37,22 @@ VCP_MEANINGS = {
 }
 
 _s3_client = None
+_s3_lock = threading.Lock()
 
 
 def _s3():
+    # boto3 client CREATION is not thread-safe; guard the lazy init since
+    # several to_thread workers can race here on a cold cache.
     global _s3_client
-    if _s3_client is None:
-        import boto3
-        from botocore import UNSIGNED
-        from botocore.config import Config
+    with _s3_lock:
+        if _s3_client is None:
+            import boto3
+            from botocore import UNSIGNED
+            from botocore.config import Config
 
-        _s3_client = boto3.client(
-            "s3", config=Config(signature_version=UNSIGNED), region_name="us-east-1"
-        )
+            _s3_client = boto3.Session().client(
+                "s3", config=Config(signature_version=UNSIGNED), region_name="us-east-1"
+            )
     return _s3_client
 
 
@@ -68,9 +73,10 @@ def load_stations() -> list[dict[str, Any]]:
         if "NEXRAD" not in stntype:
             continue
         name = line[20:50].strip()
-        # Skip ROC test/redundant radars (e.g. KCRI "ROC FAA REDUNDANT RDA");
-        # they sit next to real sites and upload non-operational volumes.
-        if "RDA" in name or "ROC " in name:
+        # Skip ROC/NSSL test, research, and redundant radars (KCRI "ROC FAA
+        # REDUNDANT RDA", KOUN "NORMAN NSSL") — they sit next to real sites
+        # and upload non-operational volumes.
+        if "RDA" in name or "ROC " in name or "NSSL" in name:
             continue
         try:
             stations.append(
@@ -131,8 +137,14 @@ def _parse_volume_sync(volume: bytes, site_elev_ft: float) -> dict[str, Any]:
 
     max_dbz = None
     max_meta: dict[str, Any] = {}
+    # Echo top: classic coarse method — beam height of >=18 dBZ echoes on the
+    # HIGHEST elevation tilt that still shows echo, restricted to 150 km range
+    # (beyond that the lowest tilts overshoot distant precipitation and the
+    # "top" becomes a beam-geometry artifact, not a storm top).
     echo_top_km: float | None = None
+    echo_top_elev: float | None = None
     echo_top_meta: dict[str, Any] = {}
+    ECHO_TOP_MAX_RANGE_KM = 150.0
     effective_earth_km = 6371.0 * 4.0 / 3.0
 
     for sweep in f.sweeps:
@@ -164,14 +176,15 @@ def _parse_volume_sync(volume: bytes, site_elev_ft: float) -> dict[str, Any]:
                     "elevation_deg": round(elev, 1),
                 }
 
-            echoes = finite >= 18.0
-            if echoes.any():
+            echoes = (finite >= 18.0) & (ranges_km <= ECHO_TOP_MAX_RANGE_KM)
+            if echoes.any() and (echo_top_elev is None or elev >= echo_top_elev - 0.1):
                 r = ranges_km[echoes]
                 h = r * math.sin(math.radians(elev)) + (r**2) / (2 * effective_earth_km)
                 j = int(np.argmax(h))
                 top = float(h[j])
-                if echo_top_km is None or top > echo_top_km:
+                if echo_top_elev is None or elev > echo_top_elev + 0.1 or top > (echo_top_km or 0):
                     echo_top_km = top
+                    echo_top_elev = elev
                     echo_top_meta = {"range_km": round(float(r[j]), 1), "azimuth_deg": round(az)}
 
     result: dict[str, Any] = {
@@ -183,11 +196,16 @@ def _parse_volume_sync(volume: bytes, site_elev_ft: float) -> dict[str, Any]:
         ),
         "echo_top_estimate": (
             {
-                "km_agl": round(echo_top_km, 1),
-                "kft_agl": round(echo_top_km * 3.28084, 1),
+                "km_above_radar": round(echo_top_km, 1),
+                "kft_above_radar": round(echo_top_km * 3.28084, 1),
+                "km_msl_approx": round(echo_top_km + site_elev_ft * 0.0003048, 1),
+                "elevation_deg": round(echo_top_elev, 1) if echo_top_elev is not None else None,
                 **echo_top_meta,
                 "threshold_dbz": 18,
-                "method": "coarse 4/3-earth beam-height estimate from highest sweep with >=18 dBZ",
+                "method": (
+                    "coarse: 4/3-earth beam height of >=18 dBZ echo on the highest "
+                    "elevation tilt with echo, within 150 km of the radar"
+                ),
             }
             if echo_top_km is not None
             else None
@@ -257,10 +275,11 @@ def interpret(data: dict[str, Any]) -> str:
         )
         if top:
             s.append(
-                f"Coarse 18-dBZ echo top estimate: {top['km_agl']} km "
-                f"({top['kft_agl']} kft) AGL at {top.get('range_km', '?')} km range, "
-                f"azimuth {top.get('azimuth_deg', '?')} deg — note this can be a distant "
-                "storm elsewhere in the volume, not necessarily near the queried point."
+                f"Coarse 18-dBZ echo top estimate: {top['km_above_radar']} km above the "
+                f"radar (~{top['km_msl_approx']} km MSL) at {top.get('range_km', '?')} km "
+                f"range, azimuth {top.get('azimuth_deg', '?')} deg — a beam-geometry "
+                "estimate that can belong to a storm elsewhere in the volume, not "
+                "necessarily near the queried point."
             )
         if vcp in (31, 32, 35):
             s.append(

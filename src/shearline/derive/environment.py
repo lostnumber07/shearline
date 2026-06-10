@@ -36,10 +36,10 @@ def compute_environment(profile: dict[str, Any]) -> dict[str, Any]:
         mixed_layer_cape_cin,
         mixed_parcel,
         most_unstable_cape_cin,
+        most_unstable_parcel,
         parcel_profile,
         significant_tornado,
         storm_relative_helicity,
-        supercell_composite,
         surface_based_cape_cin,
         wind_direction,
         wind_speed,
@@ -114,11 +114,9 @@ def compute_environment(profile: dict[str, Any]) -> dict[str, Any]:
         try:
             prof = parcel_profile(p[i:], temp[i], dewp[i])
             pcape, pcin = cape_cin(p[i:], temp[i:], dewp[i:], prof)
+            qualifies = pcape.magnitude >= 100.0 and pcin.magnitude >= -250.0
         except Exception:
-            continue
-        qualifies = (
-            pcape.magnitude >= 100.0 and pcin.magnitude >= -250.0
-        )
+            qualifies = False  # a failed level terminates the layer (contiguity)
         if qualifies and eff_base_i is None:
             eff_base_i = i
             eff_top_i = i
@@ -130,28 +128,31 @@ def compute_environment(profile: dict[str, Any]) -> dict[str, Any]:
     eff_base_m = eff_top_m = None
     eff_srh = ebwd_kt = None
     scp_val = 0.0
-    if eff_base_i is not None and eff_top_i is not None and eff_top_i > eff_base_i:
+    if eff_base_i is not None and eff_top_i is not None:
         eff_base_m = float(z_agl.magnitude[eff_base_i])
         eff_top_m = float(z_agl.magnitude[eff_top_i])
-        eff_srh = float(
-            storm_relative_helicity(
-                z_agl,
-                u,
-                v,
-                depth=(eff_top_m - eff_base_m) * units.meter,
-                bottom=eff_base_m * units.meter,
-                storm_u=rm_u,
-                storm_v=rm_v,
-            )[2].magnitude
-        )
-        # Effective bulk wind difference: inflow base to 50% of MU-parcel EL.
+        if eff_top_i > eff_base_i:
+            eff_srh = float(
+                storm_relative_helicity(
+                    z_agl,
+                    u,
+                    v,
+                    depth=(eff_top_m - eff_base_m) * units.meter,
+                    bottom=eff_base_m * units.meter,
+                    storm_u=rm_u,
+                    storm_v=rm_v,
+                )[2].magnitude
+            )
+        # Effective bulk wind difference: inflow base to 50% of the
+        # MOST-UNSTABLE parcel's EL height (Thompson et al. 2007).
         try:
-            mu_prof = parcel_profile(p, temp[0], dewp[0])
-            el_p, _ = el(p, temp, dewp, mu_prof)
+            _mu_p, mu_t, mu_td, mu_i = most_unstable_parcel(p, temp, dewp)
+            mu_prof = parcel_profile(p[mu_i:], mu_t, mu_td)
+            el_p, _ = el(p[mu_i:], temp[mu_i:], dewp[mu_i:], mu_prof)
             el_m_agl = height_at_pressure(float(el_p.to("hPa").magnitude))
         except Exception:
             el_m_agl = None
-        if el_m_agl and el_m_agl / 2.0 > eff_base_m:
+        if el_m_agl and not math.isnan(el_m_agl) and el_m_agl / 2.0 > eff_base_m:
             eb_u, eb_v = bulk_shear(
                 p,
                 u,
@@ -162,10 +163,19 @@ def compute_environment(profile: dict[str, Any]) -> dict[str, Any]:
             )
             ebwd_ms = float(wind_speed(eb_u, eb_v).to("m/s").magnitude)
             ebwd_kt = ebwd_ms * MS_TO_KT
-            scp_val = float(
-                supercell_composite(
-                    mucape, eff_srh * units("m^2/s^2"), ebwd_ms * units("m/s")
-                ).magnitude[0]
+        if eff_srh is not None and ebwd_kt is not None:
+            # SCP per SPC's operational formulation (Thompson et al. 2007 with
+            # the MUCIN term): (MUCAPE/1000)(ESRH/50)(EBWD/20). EBWD term is 0
+            # below 10 m/s and caps at 1.5 (30 m/s). MetPy's supercell_composite
+            # caps the shear term at 1.0, which understates SCP for strongly
+            # sheared regimes, so the algebra is assembled from MetPy-derived
+            # quantities directly.
+            ebwd_ms = ebwd_kt / MS_TO_KT
+            shear_term = 0.0 if ebwd_ms < 10.0 else min(ebwd_ms, 30.0) / 20.0
+            mucin_mag = float(mucin.magnitude)
+            cin_term = 1.0 if mucin_mag > -40.0 else -40.0 / mucin_mag
+            scp_val = (
+                (float(mucape.magnitude) / 1000.0) * (eff_srh / 50.0) * shear_term * cin_term
             )
             scp_val = max(scp_val, 0.0) + 0.0  # floor for right-movers; kill -0.0
 
@@ -174,16 +184,20 @@ def compute_environment(profile: dict[str, Any]) -> dict[str, Any]:
     )
 
     # Effective-layer STP with CIN term (SPC formulation), assembled from the
-    # MetPy-derived components above.
+    # MetPy-derived components above. Defined as 0 when the effective inflow
+    # base is elevated — its climatology applies to surface-based storms.
     stp_eff = None
     if eff_srh is not None and ebwd_kt is not None:
-        ebwd_ms = ebwd_kt / MS_TO_KT
-        cape_term = float(mlcape.magnitude) / 1500.0
-        lcl_term = min(max((2000.0 - ml_lcl_m_agl) / 1000.0, 0.0), 1.0)
-        srh_term = eff_srh / 150.0
-        shear_term = 0.0 if ebwd_ms < 12.5 else min(ebwd_ms, 30.0) / 20.0
-        cin_term = min(max((200.0 + float(mlcin.magnitude)) / 150.0, 0.0), 1.0)
-        stp_eff = max(cape_term * lcl_term * srh_term * shear_term * cin_term, 0.0) + 0.0
+        if eff_base_m is not None and eff_base_m > 0.0:
+            stp_eff = 0.0
+        else:
+            ebwd_ms = ebwd_kt / MS_TO_KT
+            cape_term = float(mlcape.magnitude) / 1500.0
+            lcl_term = min(max((2000.0 - ml_lcl_m_agl) / 1000.0, 0.0), 1.0)
+            srh_term = eff_srh / 150.0
+            shear_term = 0.0 if ebwd_ms < 12.5 else min(ebwd_ms, 30.0) / 20.0
+            cin_term = min(max((200.0 + float(mlcin.magnitude)) / 150.0, 0.0), 1.0)
+            stp_eff = max(cape_term * lcl_term * srh_term * shear_term * cin_term, 0.0) + 0.0
 
     data = {
         "model": "RAP 13-km analysis (f00)",
@@ -238,7 +252,10 @@ def interpret_environment(data: dict[str, Any]) -> str:
     srh1 = kin["srh_0_1km_m2s2"] or 0
     lcl_m = th["lcl_m_agl"] or 0
     scp = comp["scp"] or 0
-    stp = comp["stp_effective"] if comp["stp_effective"] is not None else comp["stp_fixed_layer"]
+    if comp["stp_effective"] is not None:
+        stp, stp_kind = comp["stp_effective"], "effective-layer"
+    else:
+        stp, stp_kind = comp["stp_fixed_layer"], "fixed-layer"
     stp = stp or 0
 
     sentences: list[str] = []
@@ -300,7 +317,7 @@ def interpret_environment(data: dict[str, Any]) -> str:
     if scp >= 4 or stp >= 1:
         sentences.append(
             f"Composite indices underline the threat: SCP {scp} (supercell composite "
-            f">~1 supports supercells) and STP {stp} (effective significant-tornado "
+            f">~1 supports supercells) and {stp_kind} STP {stp} (significant-tornado "
             "parameter >~1 is the climatological significant-tornado threshold)."
         )
     else:

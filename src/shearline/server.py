@@ -79,6 +79,8 @@ async def _warnings_payload(lat: float, lon: float, radius_km: float) -> dict[st
                 }
             )
         elif nws.is_warning(feat):
+            # only severe-convective events pass is_warning; the point query
+            # also returns winter/flood/fire products we must not count.
             parsed = nws._parse_warning(feat, lat, lon)
             if parsed["id"] not in warnings:
                 if feat.get("geometry") is None:
@@ -104,13 +106,21 @@ async def _warnings_payload(lat: float, lon: float, radius_km: float) -> dict[st
         "watches_at_point": watches,
         "counts": counts,
     }
-    return envelope(data, _interpret_warnings(data), degraded=degraded)
+    return envelope(data, _interpret_warnings(data, degraded), degraded=degraded)
 
 
-def _interpret_warnings(data: dict[str, Any]) -> str:
+def _interpret_warnings(data: dict[str, Any], degraded: list[str]) -> str:
     warnings = data["warnings"]
     watches = data["watches_at_point"]
     radius = data["radius_km"]
+    # A feed outage must never read as an all-clear (safety invariant).
+    if degraded and not warnings and not watches:
+        return (
+            f"WARNING STATUS UNKNOWN: {len(degraded)} NWS alert feed(s) were unreachable "
+            f"({', '.join(degraded)}), and no warnings were found in the feeds that did "
+            "respond. Do NOT treat this as a confirmed all-clear — retry shortly and "
+            "consult weather.gov directly."
+        )
     if not warnings and not watches:
         return (
             f"No active severe weather warnings within {radius:.0f} km of the point, and "
@@ -118,6 +128,11 @@ def _interpret_warnings(data: dict[str, Any]) -> str:
             "the outlook and environment tools for what could develop."
         )
     s: list[str] = []
+    if degraded:
+        s.append(
+            f"Note: {len(degraded)} NWS feed(s) were unreachable ({', '.join(degraded)}), "
+            "so this picture may be incomplete."
+        )
     inside = [w for w in warnings if w["point_inside"]]
     if inside:
         worst = inside[0]
@@ -176,33 +191,40 @@ async def _outlook_payload(lat: float, lon: float, day: int) -> dict[str, Any]:
     probabilities: dict[str, Any] = {}
     hazard_layers = {k: v for k, v in layers.items() if k != "categorical"}
     base_names = {k: v for k, v in hazard_layers.items() if not k.endswith("_cig")}
-    for hazard, layer_name in base_names.items():
-        try:
-            layer = await spc.fetch_layer(layer_name)
-            if spc.is_stale(layer, ref_valid):
-                degraded.append(f"spc-{hazard}-stale")
-                continue
-            result = spc.probability_at_point(layer, lat, lon)
-            cig_name = hazard_layers.get(f"{hazard}_cig")
-            if cig_name:
-                try:
-                    cig_layer = await spc.fetch_layer(cig_name)
-                    if not spc.is_stale(cig_layer, ref_valid):
-                        cig_result = spc.probability_at_point(cig_layer, lat, lon)
-                        result["conditional_intensity"] = (
-                            result["conditional_intensity"]
-                            or cig_result["conditional_intensity"]
-                        )
-                        result["significant"] = bool(
-                            result["significant"]
-                            or cig_result["significant"]
-                            or cig_result["conditional_intensity"]
-                        )
-                except Exception:
-                    degraded.append(f"spc-{hazard}-cig")
-            probabilities[hazard] = result
-        except Exception:
-            degraded.append(f"spc-{hazard}")
+    if cat_layer is None:
+        # Without the categorical layer's VALID we cannot detect SPC's frozen
+        # relic files (they keep serving HTTP 200) — skip rather than risk
+        # presenting a stale probability as current.
+        degraded.extend(f"spc-{hazard}-unverified" for hazard in base_names)
+    else:
+        for hazard, layer_name in base_names.items():
+            try:
+                layer = await spc.fetch_layer(layer_name)
+                if spc.is_stale(layer, ref_valid):
+                    degraded.append(f"spc-{hazard}-stale")
+                    continue
+                result = spc.probability_at_point(layer, lat, lon)
+                cig_name = hazard_layers.get(f"{hazard}_cig")
+                if cig_name:
+                    try:
+                        cig_layer = await spc.fetch_layer(cig_name)
+                        if not spc.is_stale(cig_layer, ref_valid):
+                            cig_result = spc.probability_at_point(cig_layer, lat, lon)
+                            result["conditional_intensity"] = (
+                                result["conditional_intensity"]
+                                or cig_result["conditional_intensity"]
+                            )
+                            # 'significant' is reserved for the legacy SIGN
+                            # hatching; CIG groups are reported faithfully as
+                            # conditional_intensity without overclaiming.
+                            result["significant"] = bool(
+                                result["significant"] or cig_result["significant"]
+                            )
+                    except Exception:
+                        degraded.append(f"spc-{hazard}-cig")
+                probabilities[hazard] = result
+            except Exception:
+                degraded.append(f"spc-{hazard}")
 
     data = {
         "point": {"lat": lat, "lon": lon},
@@ -211,15 +233,21 @@ async def _outlook_payload(lat: float, lon: float, day: int) -> dict[str, Any]:
         "categorical": categorical,
         "probabilities": probabilities,
     }
-    return envelope(data, _interpret_outlook(data), degraded=degraded)
+    return envelope(data, _interpret_outlook(data, degraded), degraded=degraded)
 
 
-def _interpret_outlook(data: dict[str, Any]) -> str:
+def _interpret_outlook(data: dict[str, Any], degraded: list[str]) -> str:
     cat = data["categorical"]
     probs = data["probabilities"]
     day = data["day"]
     label = cat.get("label")
     s: list[str] = []
+    if "spc-categorical" in degraded:
+        return (
+            f"OUTLOOK STATUS UNKNOWN: the SPC day-{day} categorical layer was unreachable, "
+            "so the risk at this point cannot be assessed right now. Do NOT treat this as "
+            "'no risk' — retry shortly or check spc.noaa.gov directly."
+        )
     if label is None:
         s.append(
             f"The point is outside any SPC day-{day} risk area: no thunderstorms are "
@@ -232,8 +260,10 @@ def _interpret_outlook(data: dict[str, Any]) -> str:
         p = probs.get(hazard)
         if p and p.get("probability_pct"):
             txt = f"{hazard.replace('_', ' ')} {p['probability_pct']}%"
-            if p.get("significant") or p.get("conditional_intensity"):
+            if p.get("significant"):
                 txt += " (significant-severe flagged)"
+            elif p.get("conditional_intensity"):
+                txt += f" (conditional intensity group {p['conditional_intensity']})"
             parts.append(txt)
     if parts:
         s.append("Probabilities within 25 miles of the point: " + ", ".join(parts) + ".")
@@ -324,7 +354,7 @@ async def _reports_payload(
 
 
 @mcp.tool()
-async def get_active_warnings(lat: float, lon: float, radius_km: float = 40) -> dict:
+async def get_active_warnings(lat: float, lon: float, radius_km: float = 40) -> dict[str, Any]:
     """Active NWS severe-weather warning polygons near a CONUS point.
 
     Returns tornado / severe thunderstorm / flash flood warnings within
@@ -338,7 +368,7 @@ async def get_active_warnings(lat: float, lon: float, radius_km: float = 40) -> 
 
 
 @mcp.tool()
-async def get_spc_outlook(lat: float, lon: float, day: int = 1) -> dict:
+async def get_spc_outlook(lat: float, lon: float, day: int = 1) -> dict[str, Any]:
     """SPC convective outlook at a CONUS point for day 1, 2, or 3.
 
     Returns the categorical risk (TSTM/MRGL/SLGT/ENH/MDT/HIGH) plus hazard
@@ -353,7 +383,7 @@ async def get_spc_outlook(lat: float, lon: float, day: int = 1) -> dict:
 
 
 @mcp.tool()
-async def get_point_environment(lat: float, lon: float) -> dict:
+async def get_point_environment(lat: float, lon: float) -> dict[str, Any]:
     """RAP-analysis severe-weather environment at a CONUS point.
 
     Downloads the latest RAP 13-km analysis profile and computes, with MetPy:
@@ -368,7 +398,7 @@ async def get_point_environment(lat: float, lon: float) -> dict:
 
 
 @mcp.tool()
-async def get_mrms_severe(lat: float, lon: float, radius_km: float = 40) -> dict:
+async def get_mrms_severe(lat: float, lon: float, radius_km: float = 40) -> dict[str, Any]:
     """MRMS radar-derived severe weather products near a CONUS point.
 
     Samples within radius_km: max 60-minute MESH (hail size, inches and mm),
@@ -383,7 +413,7 @@ async def get_mrms_severe(lat: float, lon: float, radius_km: float = 40) -> dict
 @mcp.tool()
 async def get_storm_reports(
     lat: float, lon: float, radius_km: float = 80, hours: float = 6
-) -> dict:
+) -> dict[str, Any]:
     """Local Storm Reports (spotter/official reports) near a CONUS point.
 
     Normalized tornado, hail, wind, and flood reports within radius_km over
@@ -397,7 +427,7 @@ async def get_storm_reports(
 
 
 @mcp.tool()
-async def get_threat_brief(lat: float, lon: float) -> dict:
+async def get_threat_brief(lat: float, lon: float) -> dict[str, Any]:
     """Composite severe-weather threat brief for a CONUS point.
 
     Runs warnings, SPC outlook, RAP environment, MRMS products, and storm
@@ -432,7 +462,7 @@ async def get_threat_brief(lat: float, lon: float) -> dict:
 
 
 @mcp.tool()
-async def get_radar_snapshot(lat: float, lon: float) -> dict:
+async def get_radar_snapshot(lat: float, lon: float) -> dict[str, Any]:
     """Latest NEXRAD Level 2 volume metadata from the nearest WSR-88D radar.
 
     Metadata only (no imagery): radar site and distance, volume scan start

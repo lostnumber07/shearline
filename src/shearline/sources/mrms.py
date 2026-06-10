@@ -17,6 +17,7 @@ import asyncio
 import gzip
 import os
 import tempfile
+import threading
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -59,18 +60,22 @@ PRODUCTS: dict[str, dict[str, Any]] = {
 }
 
 _s3_client = None
+_s3_lock = threading.Lock()
 
 
 def _s3():
+    # boto3 client CREATION is not thread-safe; guard the lazy init since the
+    # five product fetches run in concurrent to_thread workers on a cold cache.
     global _s3_client
-    if _s3_client is None:
-        import boto3
-        from botocore import UNSIGNED
-        from botocore.config import Config
+    with _s3_lock:
+        if _s3_client is None:
+            import boto3
+            from botocore import UNSIGNED
+            from botocore.config import Config
 
-        _s3_client = boto3.client(
-            "s3", config=Config(signature_version=UNSIGNED), region_name="us-east-1"
-        )
+            _s3_client = boto3.Session().client(
+                "s3", config=Config(signature_version=UNSIGNED), region_name="us-east-1"
+            )
     return _s3_client
 
 
@@ -153,7 +158,9 @@ def _sample_sync(
         masked = np.where(mask, vals, -np.inf)
         yi, xi = np.unravel_index(np.argmax(masked), masked.shape)
         max_lat = float(lat2d[yi, xi])
-        max_lon = float(lon2d[yi, xi]) - 360.0
+        max_lon = float(lon2d[yi, xi])
+        if max_lon > 180.0:  # MRMS grid is 0-360 east
+            max_lon -= 360.0
         return {
             "max": float(vals[yi, xi]),
             "valid_utc": valid_utc,
@@ -198,8 +205,8 @@ def shape_results(samples: dict[str, dict | None]) -> dict[str, Any]:
     if mesh is not None:
         mm = mesh.get("max")
         data["hail_mesh"] = {
-            "max_mesh_mm": round(mm, 1) if mm else None,
-            "max_mesh_in": round(mm / 25.4, 2) if mm else None,
+            "max_mesh_mm": round(mm, 1) if mm is not None else None,
+            "max_mesh_in": round(mm / 25.4, 2) if mm is not None else None,
             **{k: mesh.get(k) for k in ("valid_utc", "window", "max_location", "cells_in_radius")},
         }
 
@@ -211,7 +218,7 @@ def shape_results(samples: dict[str, dict | None]) -> dict[str, Any]:
         if rot is not None:
             raw = rot.get("max")
             data[out_key] = {
-                "max_azimuthal_shear_s1": round(raw * 0.001, 4) if raw else None,
+                "max_azimuthal_shear_s1": round(raw * 0.001, 4) if raw is not None else None,
                 "layer": level_name,
                 **{k: rot.get(k) for k in ("valid_utc", "window", "max_location", "cells_in_radius")},
             }
@@ -219,7 +226,7 @@ def shape_results(samples: dict[str, dict | None]) -> dict[str, Any]:
     vil = samples.get("vil")
     if vil is not None:
         data["vil"] = {
-            "max_vil_kg_m2": round(vil["max"], 1) if vil.get("max") else None,
+            "max_vil_kg_m2": round(vil["max"], 1) if vil.get("max") is not None else None,
             **{k: vil.get(k) for k in ("valid_utc", "window", "max_location", "cells_in_radius")},
         }
 
