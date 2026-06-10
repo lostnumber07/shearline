@@ -120,7 +120,9 @@ def _decode_profile_sync(grib: bytes, lat: float, lon: float) -> dict[str, Any]:
         d2 = (lat2d - lat) ** 2 + (lon2d - (lon % 360.0)) ** 2
         yi, xi = np.unravel_index(np.argmin(d2), d2.shape)
         gp_lat = float(lat2d[yi, xi])
-        gp_lon = float(lon2d[yi, xi]) - 360.0
+        gp_lon = float(lon2d[yi, xi])
+        if gp_lon > 180.0:  # decoded RAP coords are 0-360 east
+            gp_lon -= 360.0
 
         def col(ds: xr.Dataset, var: str) -> list[float]:
             return [float(v) for v in ds[var].values[..., yi, xi].ravel()]

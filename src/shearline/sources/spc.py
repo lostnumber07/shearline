@@ -38,6 +38,13 @@ CAT_DESCRIPTIONS = {
 
 _PROB_RE = re.compile(r"^0\.\d+$")
 
+
+def _cig_rank(label: str) -> int:
+    try:
+        return int(label[3:])
+    except ValueError:
+        return 0
+
 LAYERS_BY_DAY: dict[int, dict[str, str]] = {
     1: {
         "categorical": "day1otlk_cat",
@@ -115,7 +122,7 @@ def probability_at_point(layer: dict, lat: float, lon: float) -> dict[str, Any]:
             if best_pct is None or pct > best_pct:
                 best_pct = pct
         elif label.startswith("CIG"):
-            if cig is None or label > cig:
+            if cig is None or _cig_rank(label) > _cig_rank(cig):
                 cig = label
         elif label == "SIGN":
             sign = True
@@ -135,9 +142,9 @@ def layer_times(layer: dict) -> dict[str, Any]:
         props = feat.get("properties", {})
         if props.get("VALID"):
             return {
-                "valid_utc": str(props.get("VALID")),
-                "expire_utc": str(props.get("EXPIRE")),
-                "issue_utc": str(props.get("ISSUE")),
+                "valid_utc": str(props["VALID"]),
+                "expire_utc": str(props["EXPIRE"]) if props.get("EXPIRE") else None,
+                "issue_utc": str(props["ISSUE"]) if props.get("ISSUE") else None,
             }
     return {"valid_utc": None, "expire_utc": None, "issue_utc": None}
 

@@ -131,7 +131,7 @@ def interpret(reports: list[dict[str, Any]], radius_km: float, hours: float) -> 
         )
     if counts["hail"]:
         biggest = max(
-            (r for r in reports if r["category"] == "hail" and r["magnitude"]),
+            (r for r in reports if r["category"] == "hail" and r["magnitude"] is not None),
             key=lambda r: r["magnitude"],
             default=None,
         )
@@ -141,7 +141,7 @@ def interpret(reports: list[dict[str, Any]], radius_km: float, hours: float) -> 
         )
     if counts["wind"]:
         strongest = max(
-            (r for r in reports if r["category"] in WIND_CATEGORIES and r["magnitude"]),
+            (r for r in reports if r["category"] in WIND_CATEGORIES and r["magnitude"] is not None),
             key=lambda r: r["magnitude"],
             default=None,
         )
@@ -151,6 +151,8 @@ def interpret(reports: list[dict[str, Any]], radius_km: float, hours: float) -> 
         )
     if counts["flood"]:
         parts.append(f"{counts['flood']} flood/rain report(s)")
+    if counts["other"]:
+        parts.append(f"{counts['other']} other report(s)")
 
     lead = (
         f"{len(reports)} local storm reports within {radius_km:.0f} km over the past "

@@ -6,9 +6,28 @@ rule appends a plain-language reason to threat_logic so an agent (or human)
 can audit exactly why the level is what it is.
 """
 
+from datetime import UTC, datetime
 from typing import Any
 
 LEVELS = ["none", "marginal", "elevated", "significant", "extreme"]
+
+
+def _latest_instant_utc(timestamps: list[str]) -> str | None:
+    """Max of mixed-offset ISO timestamps by actual instant, emitted as UTC.
+
+    NWS `expires` strings carry WFO-local offsets; a lexicographic max across
+    time zones picks the wrong instant."""
+    parsed = []
+    for ts in timestamps:
+        try:
+            dt = datetime.fromisoformat(ts)
+            if dt.tzinfo is not None:
+                parsed.append(dt)
+        except (ValueError, TypeError):
+            continue
+    if not parsed:
+        return timestamps[-1] if timestamps else None
+    return max(parsed).astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 _HAZARD_WORDS = [(80, "extreme"), (50, "high"), (25, "moderate"), (10, "low"), (0, "none")]
 
@@ -44,13 +63,15 @@ def build_threat_brief(
 
     warnings = w.get("warnings") or []
     watches = w.get("watches_at_point") or []
-    refl = (m.get("composite_reflectivity") or {}).get("max_dbz") or -99
+    refl_raw = (m.get("composite_reflectivity") or {}).get("max_dbz")
+    refl = -99 if refl_raw is None else refl_raw
     mesh_in = (m.get("hail_mesh") or {}).get("max_mesh_in") or 0
     rot_ll = (m.get("rotation_lowlevel") or {}).get("max_azimuthal_shear_s1") or 0
     rot_ml = (m.get("rotation_midlevel") or {}).get("max_azimuthal_shear_s1") or 0
     vil = (m.get("vil") or {}).get("max_vil_kg_m2") or 0
     counts = r.get("counts") or {}
-    storms_active = bool(warnings) or refl >= 50 or sum(counts.values()) > 0
+    report_total = sum(v or 0 for v in counts.values())
+    storms_active = bool(warnings) or refl >= 50 or report_total > 0
 
     # ---- Warnings ----
     for warn in warnings:
@@ -76,6 +97,20 @@ def build_threat_brief(
                             else "an observed tornado"
                         )
                         + " — treat as an immediate life-safety situation.",
+                    )
+                )
+            elif inside and ((counts.get("tornado") or 0) > 0 or rot_ll >= 0.01):
+                scores["tornado"] += 20
+                corroboration = (
+                    "confirmed tornado reports nearby"
+                    if counts.get("tornado")
+                    else "an intense low-level rotation track nearby"
+                )
+                rules.append(
+                    (
+                        "extreme",
+                        f"Tornado Warning in effect {where}, corroborated by {corroboration} — "
+                        "treat as an immediate life-safety situation.",
                     )
                 )
             elif inside:
@@ -286,10 +321,10 @@ def build_threat_brief(
 
     # ---- Attention window ----
     if warnings:
-        expiries = sorted(filter(None, (warn.get("expires_utc") for warn in warnings)))
+        expiries = [warn.get("expires_utc") for warn in warnings if warn.get("expires_utc")]
         attention = {
             "window": "now",
-            "until_utc": expiries[-1] if expiries else None,
+            "until_utc": _latest_instant_utc(expiries),
             "reasoning": "Active warnings — the threat is immediate until they expire or are replaced.",
         }
     elif refl >= 50:
@@ -320,7 +355,7 @@ def build_threat_brief(
         ("low-level rotation", m.get("rotation_lowlevel"), lambda b: f"{b.get('max_azimuthal_shear_s1')} /s"),
         ("mid-level rotation", m.get("rotation_midlevel"), lambda b: f"{b.get('max_azimuthal_shear_s1')} /s"),
     ):
-        if not block or not block.get("max_location"):
+        if not block or "distance_km" not in (block.get("max_location") or {}):
             continue
         value = (
             block.get("max_dbz")
@@ -403,7 +438,7 @@ def _interpret(
     if signature:
         s.append(
             f"Nearest storm signature: {signature['signature']} of {signature['value']}, "
-            f"{signature['distance_km']} km {signature['direction']} of the point."
+            f"{signature.get('distance_km', '?')} km {signature.get('direction', '')} of the point."
         )
     s.append(f"Attention window: {attention['window']} — {attention['reasoning']}")
     return " ".join(s)

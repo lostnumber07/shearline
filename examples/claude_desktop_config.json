@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "shearline": {
+      "command": "uvx",
+      "args": ["--from", "git+https://github.com/lostnumber07/shearline", "shearline"]
+    }
+  }
+}

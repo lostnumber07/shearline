@@ -34,9 +34,15 @@ async def get_json(
     headers: dict[str, str] | None = None,
 ) -> Any:
     async def fetch() -> Any:
-        resp = await client().get(url, headers=headers or {})
-        resp.raise_for_status()
-        return resp.json()
+        last: Exception | None = None
+        for _attempt in range(2):  # one retry — NOAA endpoints hiccup transiently
+            try:
+                resp = await client().get(url, headers=headers or {})
+                resp.raise_for_status()
+                return resp.json()
+            except httpx.HTTPError as exc:
+                last = exc
+        raise last  # type: ignore[misc]
 
     return await CACHE.get_or_fetch(cache_key or f"json:{url}", ttl, fetch)
 

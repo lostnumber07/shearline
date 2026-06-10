@@ -20,8 +20,8 @@ from typing import Any
 from shapely.geometry import Point, shape
 
 from .. import geo
-from ..cache import TTL_ALERTS
-from ..fetch import get_json
+from ..cache import CACHE, TTL_ALERTS
+from ..fetch import client, get_json
 from ..geo import distance_bearing
 
 NWS_API = "https://api.weather.gov"
@@ -32,6 +32,15 @@ SEVERE_WARNING_EVENTS = [
     "Tornado Warning",
     "Severe Thunderstorm Warning",
     "Flash Flood Warning",
+]
+
+# Convective watches surfaced from the point query. Everything else the point
+# query returns (Winter Storm Warning, Flood Watch, Red Flag Warning, ...) is
+# out of scope for a severe-convective tool and must NOT be counted as a
+# warning at the point.
+SEVERE_WATCH_EVENTS = [
+    "Tornado Watch",
+    "Severe Thunderstorm Watch",
 ]
 
 _IBW_KEYS = {
@@ -137,21 +146,29 @@ async def fetch_point_alerts(lat: float, lon: float) -> list[dict]:
 
 
 async def fetch_event_alerts(event: str) -> list[dict]:
-    data = await get_json(
-        f"{NWS_API}/alerts/active?event={event.replace(' ', '%20')}",
-        ttl=TTL_ALERTS,
-        headers=ACCEPT,
-    )
-    return data.get("features", [])
+    async def fetch() -> list[dict]:
+        url: str | None = f"{NWS_API}/alerts/active?event={event.replace(' ', '%20')}"
+        features: list[dict] = []
+        pages = 0
+        while url and pages < 5:  # /alerts/active normally fits one page
+            resp = await client().get(url, headers=ACCEPT)
+            resp.raise_for_status()
+            data = resp.json()
+            features.extend(data.get("features", []))
+            url = (data.get("pagination") or {}).get("next")
+            pages += 1
+        return features
+
+    return await CACHE.get_or_fetch(f"nws-event:{event}", TTL_ALERTS, fetch)
 
 
 def is_warning(feature: dict) -> bool:
     props = feature.get("properties", {})
     return (
         props.get("messageType") in ("Alert", "Update")
-        and "Warning" in (props.get("event") or "")
+        and (props.get("event") or "") in SEVERE_WARNING_EVENTS
     )
 
 
 def is_watch(feature: dict) -> bool:
-    return "Watch" in (feature.get("properties", {}).get("event") or "")
+    return (feature.get("properties", {}).get("event") or "") in SEVERE_WATCH_EVENTS
