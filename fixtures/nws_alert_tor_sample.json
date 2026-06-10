@@ -1,0 +1,164 @@
+{
+  "id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b9c96d0af6cae143426e142cb8587bd9257ad0df.001.1",
+  "type": "Feature",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -92.68,
+          40.55
+        ],
+        [
+          -92.7,
+          40.53
+        ],
+        [
+          -92.67,
+          40.52
+        ],
+        [
+          -92.68,
+          40.51
+        ],
+        [
+          -92.68,
+          40.49
+        ],
+        [
+          -92.7,
+          40.48
+        ],
+        [
+          -92.7,
+          40.46
+        ],
+        [
+          -93.05,
+          40.46
+        ],
+        [
+          -93.1,
+          40.55
+        ],
+        [
+          -93.01,
+          40.59
+        ],
+        [
+          -92.72,
+          40.59
+        ],
+        [
+          -92.68,
+          40.55
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.b9c96d0af6cae143426e142cb8587bd9257ad0df.001.1",
+    "@type": "wx:Alert",
+    "id": "urn:oid:2.49.0.1.840.0.b9c96d0af6cae143426e142cb8587bd9257ad0df.001.1",
+    "areaDesc": "Putnam, MO",
+    "geocode": {
+      "SAME": [
+        "029171"
+      ],
+      "UGC": [
+        "MOC171"
+      ]
+    },
+    "affectedZones": [
+      "https://api.weather.gov/zones/county/MOC171"
+    ],
+    "references": [
+      {
+        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.41d2a6559ea115461b6cde0a86baed2517587ed2.001.1",
+        "identifier": "urn:oid:2.49.0.1.840.0.41d2a6559ea115461b6cde0a86baed2517587ed2.001.1",
+        "sender": "w-nws.webmaster@noaa.gov",
+        "sent": "2026-06-10T16:12:00-05:00"
+      },
+      {
+        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.7a786c942d988b8747111a9f437449b545791ab3.001.1",
+        "identifier": "urn:oid:2.49.0.1.840.0.7a786c942d988b8747111a9f437449b545791ab3.001.1",
+        "sender": "w-nws.webmaster@noaa.gov",
+        "sent": "2026-06-10T16:18:00-05:00"
+      },
+      {
+        "@id": "https://api.weather.gov/alerts/urn:oid:2.49.0.1.840.0.bb6803e2be1037f982724078c683cbb6888eb3e4.001.1",
+        "identifier": "urn:oid:2.49.0.1.840.0.bb6803e2be1037f982724078c683cbb6888eb3e4.001.1",
+        "sender": "w-nws.webmaster@noaa.gov",
+        "sent": "2026-06-10T16:20:00-05:00"
+      }
+    ],
+    "sent": "2026-06-10T16:31:00-05:00",
+    "effective": "2026-06-10T16:31:00-05:00",
+    "onset": "2026-06-10T16:31:00-05:00",
+    "expires": "2026-06-10T17:00:00-05:00",
+    "ends": "2026-06-10T17:00:00-05:00",
+    "status": "Actual",
+    "messageType": "Update",
+    "category": "Met",
+    "severity": "Extreme",
+    "certainty": "Observed",
+    "urgency": "Immediate",
+    "event": "Tornado Warning",
+    "sender": "w-nws.webmaster@noaa.gov",
+    "senderName": "NWS Kansas City/Pleasant Hill MO",
+    "headline": "Tornado Warning issued June 10 at 4:31PM CDT until June 10 at 5:00PM CDT by NWS Kansas City/Pleasant Hill MO",
+    "description": "At 431 PM CDT, a confirmed dangerous tornado was located near\nUnionville, moving east at 30 mph.\n\nThis is a PARTICULARLY DANGEROUS SITUATION. TAKE COVER NOW!\n\nHAZARD...Damaging tornado.\n\nSOURCE...Radar confirmed tornado.\n\nIMPACT...You are in a life-threatening situation. Flying debris may\nbe deadly to those caught without shelter. Mobile homes\nwill be destroyed. Considerable damage to homes,\nbusinesses, and vehicles is likely and complete destruction\nis possible.\n\nLocations impacted include...\nUnionville and Livonia.",
+    "instruction": "To repeat, a dangerous tornado is on the ground. To protect your\nlife, TAKE COVER NOW! Move to a basement or an interior room on the\nlowest floor of a sturdy building. Avoid windows. If you are\noutdoors, in a mobile home, or in a vehicle, move to the closest\nsubstantial shelter and protect yourself from flying debris.\n\nIf a tornado or other severe weather is spotted, report it to the\nNational Weather Service or your local nearest law enforcement agency\nwho will send your report. This act may save lives of others in the\npath of dangerous weather.",
+    "response": "Shelter",
+    "note": null,
+    "parameters": {
+      "AWIPSidentifier": [
+        "SVSEAX"
+      ],
+      "WMOidentifier": [
+        "WWUS53 KEAX 102131 RRA"
+      ],
+      "NWSheadline": [
+        "A TORNADO WARNING REMAINS IN EFFECT UNTIL 500 PM CDT FOR NORTHEASTERN PUTNAM COUNTY"
+      ],
+      "eventMotionDescription": [
+        "2026-06-10T21:31:00-00:00...storm...251DEG...25KT...40.52,-92.98"
+      ],
+      "maxHailSize": [
+        "1.50"
+      ],
+      "tornadoDetection": [
+        "OBSERVED"
+      ],
+      "tornadoDamageThreat": [
+        "CONSIDERABLE"
+      ],
+      "BLOCKCHANNEL": [
+        "EAS",
+        "NWEM",
+        "CMAS"
+      ],
+      "EAS-ORG": [
+        "WXR"
+      ],
+      "VTEC": [
+        "/O.CON.KEAX.TO.W.0065.000000T0000Z-260610T2200Z/"
+      ],
+      "eventEndingTime": [
+        "2026-06-10T17:00:00-05:00"
+      ]
+    },
+    "scope": "Public",
+    "code": "IPAWSv1.0",
+    "language": "en-US",
+    "web": "http://www.weather.gov",
+    "eventCode": {
+      "SAME": [
+        "SVS"
+      ],
+      "NationalWeatherService": [
+        "TOW"
+      ]
+    }
+  }
+}
