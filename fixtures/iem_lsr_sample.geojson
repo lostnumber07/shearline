@@ -1,0 +1,1505 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "id": "154",
+   "type": "Feature",
+   "properties": {
+    "wfo": "EAX",
+    "type": "T",
+    "magf": null,
+    "county": "Mercer",
+    "typetext": "TORNADO",
+    "state": "MO",
+    "remark": "Corrects previous tornado report from 4 E Mercer. Public recorded video of tornado on the ground. Approximate location estimated by radar.",
+    "city": "3 ENE Princeton",
+    "source": "Public",
+    "unit": null,
+    "valid": "2026-06-10T20:30:00Z",
+    "lon": -93.55,
+    "lat": 40.41,
+    "qualifier": null,
+    "product_id": "202606102054-KEAX-NWUS53-LSREAX",
+    "st": "MO",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -93.55,
+     40.41
+    ]
+   }
+  },
+  {
+   "id": "180",
+   "type": "Feature",
+   "properties": {
+    "wfo": "BIS",
+    "type": "T",
+    "magf": null,
+    "county": "Divide",
+    "typetext": "TORNADO",
+    "state": "ND",
+    "remark": "Tornado reported via social media by a storm chaser at 7:21 PM.",
+    "city": "3 E Noonan",
+    "source": "Storm Chaser",
+    "unit": null,
+    "valid": "2026-06-10T00:21:00Z",
+    "lon": -102.94,
+    "lat": 48.88,
+    "qualifier": null,
+    "product_id": "202606100834-KBIS-NWUS53-LSRBIS",
+    "st": "ND",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -102.94,
+     48.88
+    ]
+   }
+  },
+  {
+   "id": "633",
+   "type": "Feature",
+   "properties": {
+    "wfo": "ABR",
+    "type": "T",
+    "magf": null,
+    "county": "Codington",
+    "typetext": "TORNADO",
+    "state": "SD",
+    "remark": null,
+    "city": "Henry",
+    "source": "Emergency Mngr",
+    "unit": null,
+    "valid": "2026-06-10T05:06:00Z",
+    "lon": -97.46,
+    "lat": 44.88,
+    "qualifier": null,
+    "product_id": "202606102118-KABR-NWUS53-LSRABR",
+    "st": "SD",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.46,
+     44.88
+    ]
+   }
+  },
+  {
+   "id": "668",
+   "type": "Feature",
+   "properties": {
+    "wfo": "EAX",
+    "type": "T",
+    "magf": null,
+    "county": "Mercer",
+    "typetext": "TORNADO",
+    "state": "MO",
+    "remark": "Public recorded video of tornado on the ground. Approximate location estimated by radar.",
+    "city": "4 E Mercer",
+    "source": "Public",
+    "unit": null,
+    "valid": "2026-06-10T20:30:00Z",
+    "lon": -93.45,
+    "lat": 40.51,
+    "qualifier": null,
+    "product_id": "202606102046-KEAX-NWUS53-LSREAX",
+    "st": "MO",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -93.45,
+     40.51
+    ]
+   }
+  },
+  {
+   "id": "761",
+   "type": "Feature",
+   "properties": {
+    "wfo": "MPX",
+    "type": "T",
+    "magf": null,
+    "county": "Kandiyohi",
+    "typetext": "TORNADO",
+    "state": "MN",
+    "remark": "Delayed report. Brief EF-U tornado confirmed via social media video. No reports of damage in the area.",
+    "city": "5 NE Sunburg",
+    "source": "Public",
+    "unit": null,
+    "valid": "2026-06-10T07:07:00Z",
+    "lon": -95.17,
+    "lat": 45.41,
+    "qualifier": null,
+    "product_id": "202606102040-KMPX-NWUS53-LSRMPX",
+    "st": "MN",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -95.17,
+     45.41
+    ]
+   }
+  },
+  {
+   "id": "916",
+   "type": "Feature",
+   "properties": {
+    "wfo": "DMX",
+    "type": "T",
+    "magf": null,
+    "county": "Decatur",
+    "typetext": "TORNADO",
+    "state": "IA",
+    "remark": "Local fire chief reports several intermittent touchdowns.",
+    "city": "3 SSE Garden Grove",
+    "source": "Fire Dept/Rescue",
+    "unit": null,
+    "valid": "2026-06-10T20:54:00Z",
+    "lon": -93.59,
+    "lat": 40.79,
+    "qualifier": null,
+    "product_id": "202606102102-KDMX-NWUS53-LSRDMX",
+    "st": "IA",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -93.59,
+     40.79
+    ]
+   }
+  },
+  {
+   "id": "140",
+   "type": "Feature",
+   "properties": {
+    "wfo": "GLD",
+    "type": "2",
+    "magf": null,
+    "county": "Rawlins",
+    "typetext": "DUST STORM",
+    "state": "KS",
+    "remark": "zero visibility from blowing dust.",
+    "city": "3 WSW Beardsley",
+    "source": "Trained Spotter",
+    "unit": null,
+    "valid": "2026-06-09T22:25:00Z",
+    "lon": -101.28,
+    "lat": 39.79,
+    "qualifier": null,
+    "product_id": "202606100245-KGLD-NWUS53-LSRGLD",
+    "st": "KS",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -101.28,
+     39.79
+    ]
+   }
+  },
+  {
+   "id": "156",
+   "type": "Feature",
+   "properties": {
+    "wfo": "TFX",
+    "type": "A",
+    "magf": 60.0,
+    "county": "Gallatin",
+    "typetext": "HIGH SUST WINDS",
+    "state": "MT",
+    "remark": "Mesonet station YLWM8 Yellow Mule RAWS. Showers moving through the area, with a wind gust of 60 mph reported in the past hour.",
+    "city": "7 SSW Big Sky",
+    "source": "Mesonet",
+    "unit": "MPH",
+    "valid": "2026-06-10T00:00:00Z",
+    "lon": -111.36,
+    "lat": 45.17,
+    "qualifier": "M",
+    "product_id": "202606100035-KTFX-NWUS55-LSRTFX",
+    "st": "MT",
+    "magnitude": "60"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -111.36,
+     45.17
+    ]
+   }
+  },
+  {
+   "id": "5",
+   "type": "Feature",
+   "properties": {
+    "wfo": "LOT",
+    "type": "D",
+    "magf": null,
+    "county": "Lake",
+    "typetext": "TSTM WND DMG",
+    "state": "IL",
+    "remark": "Spotter reported structural damage as siding has been ripped off buildings as strong wind gusts came through. Small tree limbs are down as well.",
+    "city": "Antioch",
+    "source": "Trained Spotter",
+    "unit": null,
+    "valid": "2026-06-10T20:35:00Z",
+    "lon": -88.1,
+    "lat": 42.48,
+    "qualifier": null,
+    "product_id": "202606102054-KLOT-NWUS53-LSRLOT",
+    "st": "IL",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -88.1,
+     42.48
+    ]
+   }
+  },
+  {
+   "id": "6",
+   "type": "Feature",
+   "properties": {
+    "wfo": "IND",
+    "type": "E",
+    "magf": null,
+    "county": "Marion",
+    "typetext": "FLOOD",
+    "state": "IN",
+    "remark": "Report from mPING.",
+    "city": "2 NE Indianapolis Intl 3",
+    "source": "Public",
+    "unit": null,
+    "valid": "2026-06-10T01:39:00Z",
+    "lon": -86.26,
+    "lat": 9.75,
+    "qualifier": null,
+    "product_id": "202606101018-KIND-NWUS53-LSRIND",
+    "st": "IN",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -86.26,
+     9.75
+    ]
+   }
+  },
+  {
+   "id": "36",
+   "type": "Feature",
+   "properties": {
+    "wfo": "LSX",
+    "type": "F",
+    "magf": null,
+    "county": "Shelby",
+    "typetext": "FLASH FLOOD",
+    "state": "MO",
+    "remark": "3ft of water over CR 151 north of Clarence MO. Road is impassible.",
+    "city": "1 N Clarence",
+    "source": "Emergency Mngr",
+    "unit": null,
+    "valid": "2026-06-10T18:45:00Z",
+    "lon": -92.26,
+    "lat": 39.75,
+    "qualifier": null,
+    "product_id": "202606101901-KLSX-NWUS53-LSRLSX",
+    "st": "MO",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -92.26,
+     39.75
+    ]
+   }
+  },
+  {
+   "id": "0",
+   "type": "Feature",
+   "properties": {
+    "wfo": "EAX",
+    "type": "G",
+    "magf": 60.0,
+    "county": "Caldwell",
+    "typetext": "TSTM WND GST",
+    "state": "MO",
+    "remark": null,
+    "city": "1 S Hamilton",
+    "source": "Fire Dept/Rescue",
+    "unit": "MPH",
+    "valid": "2026-06-10T13:36:00Z",
+    "lon": -94.0,
+    "lat": 39.73,
+    "qualifier": "M",
+    "product_id": "202606101625-KEAX-NWUS53-LSREAX",
+    "st": "MO",
+    "magnitude": "60"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -94.0,
+     39.73
+    ]
+   }
+  },
+  {
+   "id": "23",
+   "type": "Feature",
+   "properties": {
+    "wfo": "BIS",
+    "type": "H",
+    "magf": 2.0,
+    "county": "Divide",
+    "typetext": "HAIL",
+    "state": "ND",
+    "remark": "2 IN reported near Alamo from Williams County EM.",
+    "city": "5 NNE Alamo",
+    "source": "Emergency Mngr",
+    "unit": "Inch",
+    "valid": "2026-06-09T23:45:00Z",
+    "lon": -103.43,
+    "lat": 48.65,
+    "qualifier": "M",
+    "product_id": "202606100834-KBIS-NWUS53-LSRBIS",
+    "st": "ND",
+    "magnitude": "2"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -103.43,
+     48.65
+    ]
+   }
+  },
+  {
+   "id": "588",
+   "type": "Feature",
+   "properties": {
+    "wfo": "LWX",
+    "type": "M",
+    "magf": 40.0,
+    "county": "ANZ531",
+    "typetext": "MARINE TSTM WIND",
+    "state": "MD",
+    "remark": null,
+    "city": "1 ESE Bowleys Quarters",
+    "source": "Buoy",
+    "unit": "mph",
+    "valid": "2026-06-10T20:20:00Z",
+    "lon": -76.36,
+    "lat": 39.3,
+    "qualifier": "M",
+    "product_id": "202606102030-KLWX-NWUS51-LSRLWX",
+    "st": "MD",
+    "magnitude": "40"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -76.36,
+     39.3
+    ]
+   }
+  },
+  {
+   "id": "12",
+   "type": "Feature",
+   "properties": {
+    "wfo": "UNR",
+    "type": "N",
+    "magf": 52.0,
+    "county": "Weston",
+    "typetext": "NON-TSTM WND GST",
+    "state": "WY",
+    "remark": null,
+    "city": "7 NNE Rochelle",
+    "source": "Mesonet",
+    "unit": "mph",
+    "valid": "2026-06-10T00:50:00Z",
+    "lon": -104.88,
+    "lat": 43.68,
+    "qualifier": "M",
+    "product_id": "202606100100-KUNR-NWUS53-LSRUNR",
+    "st": "WY",
+    "magnitude": "52"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -104.88,
+     43.68
+    ]
+   }
+  },
+  {
+   "id": "26",
+   "type": "Feature",
+   "properties": {
+    "wfo": "OHX",
+    "type": "O",
+    "magf": null,
+    "county": "Rutherford",
+    "typetext": "NON-TSTM WND DMG",
+    "state": "TN",
+    "remark": "Tree on powerline on Rocky Fork Road. Time estimated via radar.",
+    "city": "4 ESE Nolensville",
+    "source": "Public",
+    "unit": null,
+    "valid": "2026-06-09T22:12:00Z",
+    "lon": -86.58,
+    "lat": 35.93,
+    "qualifier": null,
+    "product_id": "202606100139-KOHX-NWUS54-LSROHX",
+    "st": "TN",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -86.58,
+     35.93
+    ]
+   }
+  },
+  {
+   "id": "3",
+   "type": "Feature",
+   "properties": {
+    "wfo": "LBF",
+    "type": "R",
+    "magf": 0.75,
+    "county": "Holt",
+    "typetext": "RAIN",
+    "state": "NE",
+    "remark": "24 hours rainfall.",
+    "city": "17 NW Oneill",
+    "source": "Public",
+    "unit": "Inch",
+    "valid": "2026-06-10T13:00:00Z",
+    "lon": -98.88,
+    "lat": 42.63,
+    "qualifier": "M",
+    "product_id": "202606101445-KLBF-NWUS53-LSRLBF",
+    "st": "NE",
+    "magnitude": "0.75"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -98.88,
+     42.63
+    ]
+   }
+  },
+  {
+   "id": "227",
+   "type": "Feature",
+   "properties": {
+    "wfo": "GLD",
+    "type": "2",
+    "magf": null,
+    "county": "Hitchcock",
+    "typetext": "BLOWING DUST",
+    "state": "NE",
+    "remark": "visibility of one to two miles; visibility is improving.",
+    "city": "10 S Stratton",
+    "source": "Trained Spotter",
+    "unit": null,
+    "valid": "2026-06-09T22:46:00Z",
+    "lon": -101.23,
+    "lat": 40.01,
+    "qualifier": null,
+    "product_id": "202606100245-KGLD-NWUS53-LSRGLD",
+    "st": "NE",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -101.23,
+     40.01
+    ]
+   }
+  },
+  {
+   "id": "568",
+   "type": "Feature",
+   "properties": {
+    "wfo": "CYS",
+    "type": "A",
+    "magf": 44.0,
+    "county": "Converse",
+    "typetext": "HIGH SUST WINDS",
+    "state": "WY",
+    "remark": "Non-convective 44 mph sustained winds reported via KDGW ASOS.",
+    "city": "3 N Douglas",
+    "source": "ASOS",
+    "unit": "MPH",
+    "valid": "2026-06-10T00:35:00Z",
+    "lon": -105.38,
+    "lat": 42.8,
+    "qualifier": "M",
+    "product_id": "202606100047-KCYS-NWUS55-LSRCYS",
+    "st": "WY",
+    "magnitude": "44"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -105.38,
+     42.8
+    ]
+   }
+  },
+  {
+   "id": "10",
+   "type": "Feature",
+   "properties": {
+    "wfo": "MPX",
+    "type": "D",
+    "magf": null,
+    "county": "Chisago",
+    "typetext": "TSTM WND DMG",
+    "state": "MN",
+    "remark": "Delayed report relayed from dispatch, time estimated from radar. Tree down.",
+    "city": "Chisago City",
+    "source": "Law Enforcement",
+    "unit": null,
+    "valid": "2026-06-10T08:36:00Z",
+    "lon": -92.89,
+    "lat": 45.37,
+    "qualifier": null,
+    "product_id": "202606101420-KMPX-NWUS53-LSRMPX",
+    "st": "MN",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -92.89,
+     45.37
+    ]
+   }
+  },
+  {
+   "id": "105",
+   "type": "Feature",
+   "properties": {
+    "wfo": "EAX",
+    "type": "E",
+    "magf": null,
+    "county": "Randolph",
+    "typetext": "FLOOD",
+    "state": "MO",
+    "remark": "Report from mPING: River/Creek overflowing; Cropland/Yard/Basement Flooding.",
+    "city": "1 NW Moberly",
+    "source": "Public",
+    "unit": null,
+    "valid": "2026-06-10T18:09:00Z",
+    "lon": -92.44,
+    "lat": 39.44,
+    "qualifier": null,
+    "product_id": "202606101812-KEAX-NWUS53-LSREAX",
+    "st": "MO",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -92.44,
+     39.44
+    ]
+   }
+  },
+  {
+   "id": "44",
+   "type": "Feature",
+   "properties": {
+    "wfo": "EAX",
+    "type": "F",
+    "magf": null,
+    "county": "Macon",
+    "typetext": "FLASH FLOOD",
+    "state": "MO",
+    "remark": "Social media report. Several roads washed out near Bevier. Time estimated from radar.",
+    "city": "1 NNE Bevier",
+    "source": "Public",
+    "unit": null,
+    "valid": "2026-06-10T18:10:00Z",
+    "lon": -92.56,
+    "lat": 39.76,
+    "qualifier": null,
+    "product_id": "202606101840-KEAX-NWUS53-LSREAX",
+    "st": "MO",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -92.56,
+     39.76
+    ]
+   }
+  },
+  {
+   "id": "1",
+   "type": "Feature",
+   "properties": {
+    "wfo": "GID",
+    "type": "G",
+    "magf": 61.0,
+    "county": "Phelps",
+    "typetext": "TSTM WND GST",
+    "state": "NE",
+    "remark": "personal weather station.",
+    "city": "3 N Wilcox",
+    "source": "Public",
+    "unit": "MPH",
+    "valid": "2026-06-10T00:00:00Z",
+    "lon": -99.18,
+    "lat": 40.41,
+    "qualifier": "M",
+    "product_id": "202606100012-KGID-NWUS53-LSRGID",
+    "st": "NE",
+    "magnitude": "61"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -99.18,
+     40.41
+    ]
+   }
+  },
+  {
+   "id": "29",
+   "type": "Feature",
+   "properties": {
+    "wfo": "BIS",
+    "type": "H",
+    "magf": 1.0,
+    "county": "Mercer",
+    "typetext": "HAIL",
+    "state": "ND",
+    "remark": "Quarter-inch hail reported in Beulah at 5:15 from social media.",
+    "city": "Beulah",
+    "source": "Public",
+    "unit": "Inch",
+    "valid": "2026-06-09T22:15:00Z",
+    "lon": -101.78,
+    "lat": 47.26,
+    "qualifier": "M",
+    "product_id": "202606100834-KBIS-NWUS53-LSRBIS",
+    "st": "ND",
+    "magnitude": "1"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -101.78,
+     47.26
+    ]
+   }
+  },
+  {
+   "id": "673",
+   "type": "Feature",
+   "properties": {
+    "wfo": "LWX",
+    "type": "M",
+    "magf": 40.0,
+    "county": "Baltimore",
+    "typetext": "MARINE TSTM WIND",
+    "state": "MD",
+    "remark": "A thunderstorm wind gust of 40 mph/35 kt was measured by a private weather station at Bowleys Marina adjacent to the Chesapeake Bay",
+    "city": "1 S Bowleys Quarters",
+    "source": "Mesonet",
+    "unit": "mph",
+    "valid": "2026-06-10T20:14:00Z",
+    "lon": -76.38,
+    "lat": 39.3,
+    "qualifier": "M",
+    "product_id": "202606102027-KLWX-NWUS51-LSRLWX",
+    "st": "MD",
+    "magnitude": "40"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -76.38,
+     39.3
+    ]
+   }
+  },
+  {
+   "id": "22",
+   "type": "Feature",
+   "properties": {
+    "wfo": "PIH",
+    "type": "N",
+    "magf": 55.0,
+    "county": "Bingham",
+    "typetext": "NON-TSTM WND GST",
+    "state": "ID",
+    "remark": "Mesonet station ITDC4 D5 Tilden Flats US-26.",
+    "city": "3 NNW Taber",
+    "source": "Mesonet",
+    "unit": "MPH",
+    "valid": "2026-06-10T20:15:00Z",
+    "lon": -112.64,
+    "lat": 43.36,
+    "qualifier": "M",
+    "product_id": "202606102108-KPIH-NWUS55-LSRPIH",
+    "st": "ID",
+    "magnitude": "55"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -112.64,
+     43.36
+    ]
+   }
+  },
+  {
+   "id": "272",
+   "type": "Feature",
+   "properties": {
+    "wfo": "FSD",
+    "type": "O",
+    "magf": null,
+    "county": "Charles Mix",
+    "typetext": "NON-TSTM WND DMG",
+    "state": "SD",
+    "remark": "Non-thunderstorm winds removed the roof from a picnic shelter and damaged a fence.",
+    "city": "10 NW Platte",
+    "source": "Public",
+    "unit": null,
+    "valid": "2026-06-10T04:37:00Z",
+    "lon": -98.99,
+    "lat": 43.48,
+    "qualifier": null,
+    "product_id": "202606102053-KFSD-NWUS53-LSRFSD",
+    "st": "SD",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -98.99,
+     43.48
+    ]
+   }
+  },
+  {
+   "id": "8",
+   "type": "Feature",
+   "properties": {
+    "wfo": "CYS",
+    "type": "R",
+    "magf": 0.11,
+    "county": "Goshen",
+    "typetext": "RAIN",
+    "state": "WY",
+    "remark": "Cocorahs station WY-GS-70 Veteran 2.3 NW.",
+    "city": "4 WNW Veteran",
+    "source": "Cocorahs",
+    "unit": "Inch",
+    "valid": "2026-06-10T12:00:00Z",
+    "lon": -104.42,
+    "lat": 41.98,
+    "qualifier": "M",
+    "product_id": "202606101654-KCYS-NWUS55-LSRCYS",
+    "st": "WY",
+    "magnitude": "0.11"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -104.42,
+     41.98
+    ]
+   }
+  },
+  {
+   "id": "289",
+   "type": "Feature",
+   "properties": {
+    "wfo": "GLD",
+    "type": "2",
+    "magf": null,
+    "county": "Thomas",
+    "typetext": "DUST STORM",
+    "state": "KS",
+    "remark": "visibility down to 100 yards then improved to a half mile; visibility briefly falls to less than half mile at times.",
+    "city": "3 ESE Levant",
+    "source": "Trained Spotter",
+    "unit": null,
+    "valid": "2026-06-09T21:56:00Z",
+    "lon": -101.13,
+    "lat": 39.37,
+    "qualifier": null,
+    "product_id": "202606100245-KGLD-NWUS53-LSRGLD",
+    "st": "KS",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -101.13,
+     39.37
+    ]
+   }
+  },
+  {
+   "id": "11",
+   "type": "Feature",
+   "properties": {
+    "wfo": "ILX",
+    "type": "D",
+    "magf": null,
+    "county": "Peoria",
+    "typetext": "TSTM WND DMG",
+    "state": "IL",
+    "remark": "Large tree downed on North Timber Circle. Time estimated from radar.",
+    "city": "Peoria Heights",
+    "source": "Trained Spotter",
+    "unit": null,
+    "valid": "2026-06-10T19:21:00Z",
+    "lon": -89.57,
+    "lat": 40.74,
+    "qualifier": null,
+    "product_id": "202606102012-KILX-NWUS53-LSRILX",
+    "st": "IL",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -89.57,
+     40.74
+    ]
+   }
+  },
+  {
+   "id": "169",
+   "type": "Feature",
+   "properties": {
+    "wfo": "EAX",
+    "type": "E",
+    "magf": null,
+    "county": "Macon",
+    "typetext": "FLOOD",
+    "state": "MO",
+    "remark": "Report from mPING: Street/road flooding; Street/road closed; Vehicles stranded.",
+    "city": "2 N Excello",
+    "source": "Public",
+    "unit": null,
+    "valid": "2026-06-10T17:53:00Z",
+    "lon": -92.47,
+    "lat": 39.67,
+    "qualifier": null,
+    "product_id": "202606101757-KEAX-NWUS53-LSREAX",
+    "st": "MO",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -92.47,
+     39.67
+    ]
+   }
+  },
+  {
+   "id": "47",
+   "type": "Feature",
+   "properties": {
+    "wfo": "RLX",
+    "type": "F",
+    "magf": null,
+    "county": "Kanawha",
+    "typetext": "FLASH FLOOD",
+    "state": "WV",
+    "remark": "High water reported on 41st and 42nd Streets.",
+    "city": "Kanawha City",
+    "source": "911 Call Center",
+    "unit": null,
+    "valid": "2026-06-10T13:22:00Z",
+    "lon": -81.59,
+    "lat": 38.33,
+    "qualifier": null,
+    "product_id": "202606101410-KRLX-NWUS51-LSRRLX",
+    "st": "WV",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -81.59,
+     38.33
+    ]
+   }
+  },
+  {
+   "id": "2",
+   "type": "Feature",
+   "properties": {
+    "wfo": "GID",
+    "type": "G",
+    "magf": 58.0,
+    "county": "Buffalo",
+    "typetext": "TSTM WND GST",
+    "state": "NE",
+    "remark": "personal weather station.",
+    "city": "3 W Gibbon",
+    "source": "Public",
+    "unit": "MPH",
+    "valid": "2026-06-10T00:30:00Z",
+    "lon": -98.89,
+    "lat": 40.75,
+    "qualifier": "M",
+    "product_id": "202606101328-KGID-NWUS53-LSRGID",
+    "st": "NE",
+    "magnitude": "58"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -98.89,
+     40.75
+    ]
+   }
+  },
+  {
+   "id": "31",
+   "type": "Feature",
+   "properties": {
+    "wfo": "BIS",
+    "type": "H",
+    "magf": 1.75,
+    "county": "Stark",
+    "typetext": "HAIL",
+    "state": "ND",
+    "remark": "Broadcast media reported golf ball size hail in Richardton.",
+    "city": "Richardton",
+    "source": "Broadcast Media",
+    "unit": "Inch",
+    "valid": "2026-06-09T22:16:00Z",
+    "lon": -102.31,
+    "lat": 46.88,
+    "qualifier": "M",
+    "product_id": "202606100834-KBIS-NWUS53-LSRBIS",
+    "st": "ND",
+    "magnitude": "1.75"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -102.31,
+     46.88
+    ]
+   }
+  },
+  {
+   "id": "884",
+   "type": "Feature",
+   "properties": {
+    "wfo": "LWX",
+    "type": "M",
+    "magf": 39.0,
+    "county": "ANZ530",
+    "typetext": "MARINE TSTM WIND",
+    "state": "MD",
+    "remark": "A thunderstorm wind gust of 34 kt/39 mph was measured by a private weather station adjacent to the Elk River",
+    "city": "3 WSW Hollywood Beach",
+    "source": "Mesonet",
+    "unit": "mph",
+    "valid": "2026-06-10T20:54:00Z",
+    "lon": -75.96,
+    "lat": 39.48,
+    "qualifier": "M",
+    "product_id": "202606102110-KLWX-NWUS51-LSRLWX",
+    "st": "MD",
+    "magnitude": "39"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -75.96,
+     39.48
+    ]
+   }
+  },
+  {
+   "id": "30",
+   "type": "Feature",
+   "properties": {
+    "wfo": "PIH",
+    "type": "N",
+    "magf": 52.0,
+    "county": "Custer",
+    "typetext": "NON-TSTM WND GST",
+    "state": "ID",
+    "remark": "Mesonet station 8962 D4 Clayton ID-75.",
+    "city": "4 W Clayton",
+    "source": "Mesonet",
+    "unit": "MPH",
+    "valid": "2026-06-10T19:30:00Z",
+    "lon": -114.48,
+    "lat": 44.26,
+    "qualifier": "M",
+    "product_id": "202606102108-KPIH-NWUS55-LSRPIH",
+    "st": "ID",
+    "magnitude": "52"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -114.48,
+     44.26
+    ]
+   }
+  },
+  {
+   "id": "9",
+   "type": "Feature",
+   "properties": {
+    "wfo": "LBF",
+    "type": "R",
+    "magf": 0.7,
+    "county": "Holt",
+    "typetext": "RAIN",
+    "state": "NE",
+    "remark": "24 hour rainfall.",
+    "city": "2 W Emmet",
+    "source": "Public",
+    "unit": "Inch",
+    "valid": "2026-06-10T13:00:00Z",
+    "lon": -98.85,
+    "lat": 42.48,
+    "qualifier": "M",
+    "product_id": "202606101455-KLBF-NWUS53-LSRLBF",
+    "st": "NE",
+    "magnitude": "0.7"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -98.85,
+     42.48
+    ]
+   }
+  },
+  {
+   "id": "337",
+   "type": "Feature",
+   "properties": {
+    "wfo": "PUB",
+    "type": "2",
+    "magf": null,
+    "county": "Baca",
+    "typetext": "BLOWING DUST",
+    "state": "CO",
+    "remark": "Visibility less than a quarter of a mile.",
+    "city": "4 WSW Springfield",
+    "source": "Emergency Mngr",
+    "unit": null,
+    "valid": "2026-06-09T21:10:00Z",
+    "lon": -102.68,
+    "lat": 37.38,
+    "qualifier": null,
+    "product_id": "202606100010-KPUB-NWUS55-LSRPUB",
+    "st": "CO",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -102.68,
+     37.38
+    ]
+   }
+  },
+  {
+   "id": "18",
+   "type": "Feature",
+   "properties": {
+    "wfo": "OHX",
+    "type": "D",
+    "magf": null,
+    "county": "Rutherford",
+    "typetext": "TSTM WND DMG",
+    "state": "TN",
+    "remark": "Multiple trees down in the stone east neighborhood, with possible shingles coming off of homes.",
+    "city": "2 WNW Walterhill",
+    "source": "Trained Spotter",
+    "unit": null,
+    "valid": "2026-06-09T22:35:00Z",
+    "lon": -86.41,
+    "lat": 35.97,
+    "qualifier": null,
+    "product_id": "202606100512-KOHX-NWUS54-LSROHX",
+    "st": "TN",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -86.41,
+     35.97
+    ]
+   }
+  },
+  {
+   "id": "329",
+   "type": "Feature",
+   "properties": {
+    "wfo": "ILN",
+    "type": "E",
+    "magf": null,
+    "county": "Ripley",
+    "typetext": "FLOOD",
+    "state": "IN",
+    "remark": "Salem Road near Laughery Creek flooded.",
+    "city": "5 ENE Napoleon",
+    "source": "911 Call Center",
+    "unit": null,
+    "valid": "2026-06-10T11:35:00Z",
+    "lon": -85.24,
+    "lat": 39.23,
+    "qualifier": null,
+    "product_id": "202606101148-KILN-NWUS51-LSRILN",
+    "st": "IN",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -85.24,
+     39.23
+    ]
+   }
+  },
+  {
+   "id": "113",
+   "type": "Feature",
+   "properties": {
+    "wfo": "FFC",
+    "type": "F",
+    "magf": null,
+    "county": "Polk",
+    "typetext": "FLASH FLOOD",
+    "state": "GA",
+    "remark": "Emergency Manager reports a stalled car due to flash flooding on East Queen St in Cedartown.",
+    "city": "Cedartown",
+    "source": "Emergency Mngr",
+    "unit": null,
+    "valid": "2026-06-10T01:31:00Z",
+    "lon": -85.25,
+    "lat": 34.02,
+    "qualifier": null,
+    "product_id": "202606100131-KFFC-NWUS52-LSRFFC",
+    "st": "GA",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -85.25,
+     34.02
+    ]
+   }
+  },
+  {
+   "id": "4",
+   "type": "Feature",
+   "properties": {
+    "wfo": "PUB",
+    "type": "G",
+    "magf": 61.0,
+    "county": "Baca",
+    "typetext": "TSTM WND GST",
+    "state": "CO",
+    "remark": "ASOS station KSPD 8 S Springfield.",
+    "city": "9 S Springfield",
+    "source": "ASOS",
+    "unit": "MPH",
+    "valid": "2026-06-09T21:56:00Z",
+    "lon": -102.62,
+    "lat": 37.28,
+    "qualifier": "M",
+    "product_id": "202606100010-KPUB-NWUS55-LSRPUB",
+    "st": "CO",
+    "magnitude": "61"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -102.62,
+     37.28
+    ]
+   }
+  },
+  {
+   "id": "43",
+   "type": "Feature",
+   "properties": {
+    "wfo": "BIS",
+    "type": "H",
+    "magf": 0.88,
+    "county": "McLean",
+    "typetext": "HAIL",
+    "state": "ND",
+    "remark": null,
+    "city": "Riverdale",
+    "source": "Trained Spotter",
+    "unit": "Inch",
+    "valid": "2026-06-09T23:28:00Z",
+    "lon": -101.37,
+    "lat": 47.5,
+    "qualifier": "M",
+    "product_id": "202606100834-KBIS-NWUS53-LSRBIS",
+    "st": "ND",
+    "magnitude": "0.88"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -101.37,
+     47.5
+    ]
+   }
+  },
+  {
+   "id": "52",
+   "type": "Feature",
+   "properties": {
+    "wfo": "CYS",
+    "type": "N",
+    "magf": 58.0,
+    "county": "Carbon",
+    "typetext": "NON-TSTM WND GST",
+    "state": "WY",
+    "remark": null,
+    "city": "3 NW Arlington",
+    "source": "Mesonet",
+    "unit": "MPH",
+    "valid": "2026-06-09T21:32:00Z",
+    "lon": -106.25,
+    "lat": 41.62,
+    "qualifier": "E",
+    "product_id": "202606100012-KCYS-NWUS55-LSRCYS",
+    "st": "WY",
+    "magnitude": "58"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -106.25,
+     41.62
+    ]
+   }
+  },
+  {
+   "id": "27",
+   "type": "Feature",
+   "properties": {
+    "wfo": "LBF",
+    "type": "R",
+    "magf": 0.4,
+    "county": "Holt",
+    "typetext": "RAIN",
+    "state": "NE",
+    "remark": "24 hour rainfall.",
+    "city": "7 NE Page",
+    "source": "Public",
+    "unit": "Inch",
+    "valid": "2026-06-10T13:00:00Z",
+    "lon": -98.32,
+    "lat": 42.47,
+    "qualifier": "M",
+    "product_id": "202606101458-KLBF-NWUS53-LSRLBF",
+    "st": "NE",
+    "magnitude": "0.4"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -98.32,
+     42.47
+    ]
+   }
+  },
+  {
+   "id": "369",
+   "type": "Feature",
+   "properties": {
+    "wfo": "GLD",
+    "type": "2",
+    "magf": null,
+    "county": "Rawlins",
+    "typetext": "BLOWING DUST",
+    "state": "KS",
+    "remark": "visibility of a half mile reported.",
+    "city": "10 N Blakeman",
+    "source": "Trained Spotter",
+    "unit": null,
+    "valid": "2026-06-09T22:38:00Z",
+    "lon": -101.12,
+    "lat": 39.96,
+    "qualifier": null,
+    "product_id": "202606100245-KGLD-NWUS53-LSRGLD",
+    "st": "KS",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -101.12,
+     39.96
+    ]
+   }
+  },
+  {
+   "id": "20",
+   "type": "Feature",
+   "properties": {
+    "wfo": "FGF",
+    "type": "D",
+    "magf": null,
+    "county": "Cavalier",
+    "typetext": "TSTM WND DMG",
+    "state": "ND",
+    "remark": "Several large trees down - all laying to the northeast.",
+    "city": "5 SE Osnabrock",
+    "source": "Public",
+    "unit": null,
+    "valid": "2026-06-10T04:10:00Z",
+    "lon": -98.07,
+    "lat": 48.62,
+    "qualifier": null,
+    "product_id": "202606101652-KFGF-NWUS53-LSRFGF",
+    "st": "ND",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -98.07,
+     48.62
+    ]
+   }
+  },
+  {
+   "id": "381",
+   "type": "Feature",
+   "properties": {
+    "wfo": "EAX",
+    "type": "E",
+    "magf": null,
+    "county": "Macon",
+    "typetext": "FLOOD",
+    "state": "MO",
+    "remark": "Report from mPING: River/Creek overflowing; Cropland/Yard/Basement Flooding.",
+    "city": "1 S Macon",
+    "source": "Public",
+    "unit": null,
+    "valid": "2026-06-10T16:29:00Z",
+    "lon": -92.47,
+    "lat": 39.73,
+    "qualifier": null,
+    "product_id": "202606101811-KEAX-NWUS53-LSREAX",
+    "st": "MO",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -92.47,
+     39.73
+    ]
+   }
+  },
+  {
+   "id": "127",
+   "type": "Feature",
+   "properties": {
+    "wfo": "BMX",
+    "type": "F",
+    "magf": null,
+    "county": "Lee",
+    "typetext": "FLASH FLOOD",
+    "state": "AL",
+    "remark": "Flooding at Auburn University.",
+    "city": "0 SW Jordan Hare Stadiu",
+    "source": "Emergency Manager",
+    "unit": null,
+    "valid": "2026-06-09T21:40:00Z",
+    "lon": -85.49,
+    "lat": 32.6,
+    "qualifier": null,
+    "product_id": "202606092148-KBMX-NWUS54-LSRBMX",
+    "st": "AL",
+    "magnitude": ""
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -85.49,
+     32.6
+    ]
+   }
+  },
+  {
+   "id": "7",
+   "type": "Feature",
+   "properties": {
+    "wfo": "ABR",
+    "type": "G",
+    "magf": 59.0,
+    "county": "Hyde",
+    "typetext": "TSTM WND GST",
+    "state": "SD",
+    "remark": "Mesonet station 183 Macs Corner (SDDOT).",
+    "city": "1 NE Stephan",
+    "source": "Mesonet",
+    "unit": "MPH",
+    "valid": "2026-06-10T03:13:00Z",
+    "lon": -99.44,
+    "lat": 44.26,
+    "qualifier": "M",
+    "product_id": "202606102118-KABR-NWUS53-LSRABR",
+    "st": "SD",
+    "magnitude": "59"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -99.44,
+     44.26
+    ]
+   }
+  }
+ ]
+}

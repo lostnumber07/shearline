@@ -1,0 +1,77 @@
+{
+  "source_id": "iem-lsr",
+  "verified_utc": "2026-06-10T21:35Z",
+  "primary_endpoint": {
+    "url": "https://mesonet.agron.iastate.edu/geojson/lsr.geojson",
+    "alias": "https://mesonet.agron.iastate.edu/geojson/lsr.php (identical app, identical output)",
+    "content_type": "application/vnd.geo+json; charset=utf-8",
+    "source_code": "https://github.com/akrherz/iem/blob/main/pylib/iemweb/geojson/lsr.py (read 2026-06-10)",
+    "params": {
+      "hours": "int; window of N hours ending at ets (ets defaults to now-UTC). Verified: hours=2, hours=24.",
+      "sts": "start timestamp, UTC ALWAYS. Parser is strptime('%Y-%m-%dT%H:%M') on value[:16] (seconds and 'Z'/offset suffix silently DISCARDED) or '%Y%m%d%H%M'. Verified: sts=2026-06-09T21:00Z worked, returned valid range exactly 21:00Z->21:00Z.",
+      "ets": "end timestamp, same parsing as sts",
+      "wfos": "comma-separated 3-4 char WFO ids, e.g. wfos=DMX,DVN. Verified filters correctly WITH sts/ets. CAUTION: with hours= (no ets) responses are memcached 60s under a key that OMITS wfos -> you can get another request's unfiltered/different-filtered cached payload. Always pair wfos with explicit sts+ets.",
+      "wfo": "singular; DOES NOT FILTER the default listing (verified: wfo=LOT&hours=24 returned 48 WFOs). Only used in the VTEC lookup mode (phenomena/significance/eventid/year).",
+      "states": "comma-separated 2-char state abbrs; verified states=IL returns only IL. Uses ST_Intersects against state polygons. SIDE EFFECT: this code path leaks an extra property 'l' containing the raw Postgres composite row as a string (server-side SQL typo 'l,county'). Ignore unknown keys.",
+      "west_east_north_south": "decimal-degree bbox; ALL FOUR required or HTTP error. Verified returns only points inside box (ST_Contains). OVERRIDES wfos if both given (code replaces the wfos limiter).",
+      "phenomena+significance+eventid+year+wfo": "VTEC mode: LSRs spatially/temporally within one storm-based warning. Output in this mode LACKS product_id.",
+      "inc_ap": "bool; adds 'prodlinks' HTML property of associated warnings (slow; per-row queries)",
+      "callback": "JSONP",
+      "no_time_params": "silently returns empty FeatureCollection (verified). sts without ets: also silently empty. Must send hours OR (sts AND ets)."
+    },
+    "row_limit": "LIMIT 10000 (default and states paths; from source). 24h national on 2026-06-10 = 996 features / ~494 KB, so national fetch is fine.",
+    "feature_id": "feature 'id' is the stringified dataframe row index ('0','1',...) - NOT stable; dedupe on (product_id, valid, lon, lat, type, magnitude).",
+    "history": "lsrs table has data back to ~2002 (quality good from 2005/2006 per IEM docs)"
+  },
+  "properties_schema_observed": {
+    "wfo": "str 3-char WFO id, e.g. 'LOT'",
+    "type": "1-char LSR type code (see type_codes)",
+    "typetext": "str uppercase event text, e.g. 'TSTM WND GST'",
+    "magf": "float or null; numeric magnitude",
+    "magnitude": "STRING (legacy); '' when null, else str(magf) with trailing '.0' stripped, e.g. '60', '1.75'",
+    "unit": "str or null; observed: 'MPH'/'mph', 'Inch'/'inch' (CASE VARIES - compare case-insensitively)",
+    "qualifier": "'M'=measured, 'E'=estimated, 'U'=unknown, null when no magnitude. Counts in 24h sample: M=656, null=269, E=69, U=2",
+    "valid": "event time UTC, 'YYYY-MM-DDTHH:MM:SSZ' (996/996 conform)",
+    "lon": "float deg E (also in geometry.coordinates[0])",
+    "lat": "float deg N (also in geometry.coordinates[1])",
+    "county": "str county name",
+    "state": "2-char state abbr",
+    "st": "duplicate of state (legacy)",
+    "city": "str location, may be relative like '2 SW Williamstown'",
+    "source": "str report source; top observed: Mesonet, Public, Emergency Mngr, Trained Spotter, ASOS, Law Enforcement, AWOS, Dept of Highways",
+    "remark": "str free text or null (never empty string in 24h sample: 758 text / 238 null)",
+    "product_id": "str like '202606102124-KLOT-NWUS53-LSRLSR-id', coalesce(product_id_summary, product_id); absent in VTEC mode",
+    "geometry": "Point [lon, lat], 0.01-degree precision"
+  },
+  "type_codes_observed_24h_2026-06-10": {
+    "T": {"typetext": "TORNADO", "magnitude": "always null/'' (no EF in LSR)", "unit": null, "count": 6},
+    "H": {"typetext": "HAIL", "magnitude": "inches diameter (verified vs remarks: 1.75='golf ball')", "unit": "Inch/inch", "count": 38},
+    "G": {"typetext": "TSTM WND GST", "magnitude": "MPH (verified)", "unit": "MPH/mph", "count": 438},
+    "D": {"typetext": "TSTM WND DMG", "magnitude": "null", "unit": null, "count": 205},
+    "N": {"typetext": "NON-TSTM WND GST", "magnitude": "MPH", "unit": "mph/MPH", "count": 139},
+    "O": {"typetext": "NON-TSTM WND DMG", "magnitude": "null", "unit": null, "count": 2},
+    "A": {"typetext": "HIGH SUST WINDS", "magnitude": "MPH", "unit": "MPH", "count": 2},
+    "M": {"typetext": "MARINE TSTM WIND", "magnitude": "MPH not knots (verified vs remark '40 mph/35 kt' -> magnitude 40)", "unit": "mph", "count": 3},
+    "R": {"typetext": "RAIN", "magnitude": "inches", "unit": "Inch/inch", "count": 107},
+    "F": {"typetext": "FLASH FLOOD", "magnitude": "null", "unit": null, "count": 33},
+    "E": {"typetext": "FLOOD", "magnitude": "null", "unit": null, "count": 13},
+    "2": {"typetext": "DUST STORM or BLOWING DUST (one code, two typetexts)", "magnitude": "null", "unit": null, "count": 10},
+    "note": "codes are season-dependent; winter adds S=SNOW (inch), 5=ICE STORM etc. One code can map to multiple typetexts. Match on type for class, keep typetext for display."
+  },
+  "alternate_endpoint_point_radius": {
+    "url": "https://mesonet.agron.iastate.edu/api/1/nws/lsrs_by_point.geojson",
+    "params": "lon (required, deg E), lat (required, deg N), radius_degrees (<10) OR radius_miles (<1000), begints / endts (UTC ISO date-time)",
+    "verified_example": "lon=-90.43&lat=42.42&radius_miles=100&begints=2026-06-09T21:00:00Z&endts=2026-06-10T21:00:00Z -> 52 features",
+    "schema_differences_vs_geojson_service": [
+      "magnitude is a NUMBER (62.0) or null - not a string",
+      "no magf, no st",
+      "extra fields: ugc (e.g. 'IAC103'), product_id_summary (often null)",
+      "top-level has name and crs keys",
+      "this is the only documented endpoint in /api/1/docs; the /geojson/lsr.geojson service is the self-documented legacy app (docs at https://mesonet.agron.iastate.edu/geojson/lsr.py?help)"
+    ]
+  },
+  "fixture_provenance": {
+    "iem_lsr_sample.geojson": "raw features from GET /geojson/lsr.geojson?sts=2026-06-09T21:00:00Z&ets=2026-06-10T21:00:00Z (996 national features), stratified-trimmed to 50 features: all 6 tornadoes + round-robin across the other 11 type codes; feature objects byte-identical to received",
+    "iem_lsr_bypoint_sample.geojson": "raw, untrimmed response from the lsrs_by_point example above (52 features)"
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "source_id": "mcp-packaging",
+  "verified_at_utc": "2026-06-10T21:45:00Z",
+  "verification_method": "Live fetches of modelcontextprotocol/registry docs (main branch), live registry API probes, mcp 1.27.2 wheel inspection, and end-to-end FastMCP smoke tests (stdio + streamable-http) run in the shearline venv.",
+
+  "registry": {
+    "repo": "https://github.com/modelcontextprotocol/registry (default branch: main, pushed 2026-06-05)",
+    "status": "Registry is in PREVIEW; docs warn breaking changes or data resets may occur before GA.",
+    "docs_layout_note": "Publishing guides live in docs/modelcontextprotocol-io/*.mdx (quickstart, package-types, authentication, versioning); server.json spec lives in docs/reference/server-json/ (generic-server-json.md, official-registry-requirements.md, draft/server.schema.json).",
+    "schema": {
+      "current_published_schema_url": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+      "verified_live": "HTTP 200, last-modified Fri 12 Dec 2025 16:40:47 GMT, JSON Schema $id matches URL; saved as fixtures/registry_server.schema.2025-12-11.json",
+      "changelog": "2025-12-11 is the latest dated release (added URL template variables for remotes). A newer 'Draft (Unreleased)' exists only at docs/reference/server-json/draft/server.schema.json.",
+      "top_level_ref": "#/definitions/ServerDetail",
+      "required_fields": ["name", "description", "version"],
+      "all_server_fields": ["$schema", "name", "title", "description", "websiteUrl", "icons", "repository", "version", "packages", "remotes", "_meta"],
+      "field_constraints": {
+        "name": "pattern ^[a-zA-Z0-9.-]+/[a-zA-Z0-9._-]+$ — exactly ONE forward slash separating namespace from server name; minLength 3, maxLength 200. Example: io.github.user/weather",
+        "description": "minLength 1, maxLength 100 (only 100 chars!). Capabilities-focused human description.",
+        "version": "maxLength 255; SHOULD be semver; version RANGES are rejected (^1.2.3, ~1.2.3, >=1.2.3, 1.x)",
+        "title": "optional display name, 1-100 chars",
+        "websiteUrl": "optional, format uri"
+      },
+      "package_required_fields": ["registryType", "identifier", "transport"],
+      "package_all_fields": ["registryType", "registryBaseUrl", "identifier", "version", "runtimeHint", "runtimeArguments", "packageArguments", "environmentVariables", "transport", "fileSha256"],
+      "transport_anyOf": ["StdioTransport {type:'stdio'}", "StreamableHttpTransport", "SseTransport"]
+    },
+    "pypi_packages": {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org (optional in package entry; official registry allows ONLY https://pypi.org for pypi)",
+      "identifier": "the PyPI project name (e.g. 'shearline-mcp')",
+      "runtimeHint": "uvx — string hint; schema examples are ['npx','uvx','docker','dnx']. For a plain `uvx <package>` launch you set runtimeHint:'uvx' and need NO runtimeArguments; packageArguments are appended after the package name if the CLI needs extra args.",
+      "ownership_verification": "Registry validator fetches the package README (PyPI long_description) and looks for the literal string 'mcp-name: <server-name>'. May be inside an HTML comment, e.g. <!-- mcp-name: io.github.lostnumber07/shearline -->. The token MUST be followed by a boundary (newline, whitespace, HTML tag, or -->); a trailing period glued to the name breaks the match.",
+      "note": "PyPI has no package.json 'mcpName' equivalent — verification is README-string-based only."
+    },
+    "namespace_rules": {
+      "github_auth": "With GitHub-based auth the server name MUST be io.github.<username>/* or io.github.<orgname>/* (lowercase 'io.github.' prefix + GitHub login). E.g. io.github.lostnumber07/shearline. Validation: mcp-publisher login github runs a GitHub device-code OAuth flow (https://github.com/login/device); the resulting registry JWT only authorizes publishing names under io.github.<authenticated-login>/.",
+      "domain_auth": "Alternative: reverse-DNS namespaces (com.example.*/*) proven via DNS TXT record at the domain APEX ('v=MCPv1; k=ed25519; p=<pubkey>') or HTTP file at /.well-known/mcp-registry-auth. Not needed for SHEARLINE.",
+      "error_if_mismatched": "\"You do not have permission to publish this server\" => name prefix does not match the authenticated namespace."
+    },
+    "meta_field": {
+      "rule": "In server.json, ONLY _meta['io.modelcontextprotocol.registry/publisher-provided'] is preserved; any other _meta keys are silently dropped. Hard 4KB (4096 bytes) JSON size limit on that extension.",
+      "api_responses": "Registry API responses wrap each entry as {server: {...}, _meta: {'io.modelcontextprotocol.registry/official': {status, publishedAt, updatedAt, isLatest, statusChangedAt}}} — registry-managed _meta lives at the RESPONSE level under the .../official key (observed live), distinct from publisher-provided _meta inside server."
+    },
+    "publish_workflow": [
+      "1. Add '<!-- mcp-name: io.github.lostnumber07/shearline -->' to the package README (becomes PyPI description)",
+      "2. Publish package to PyPI first (registry hosts metadata only, never artifacts)",
+      "3. Install mcp-publisher (brew install mcp-publisher, or release tarball from github.com/modelcontextprotocol/registry/releases: mcp-publisher_<os>_<arch>.tar.gz)",
+      "4. mcp-publisher init  (generates server.json template; uses camelCase keys: registryType, environmentVariables, etc.)",
+      "5. mcp-publisher login github  (device-code flow)",
+      "6. mcp-publisher publish  (POSTs to https://registry.modelcontextprotocol.io)",
+      "7. Verify: curl 'https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.lostnumber07/shearline'"
+    ],
+    "live_api_observations": {
+      "search_endpoint": "https://registry.modelcontextprotocol.io/v0.1/servers?search={query}&limit={n} — HTTP 200, returns {servers:[{server:{...},_meta:{...}}], metadata:{count}}",
+      "legacy_v0": "https://registry.modelcontextprotocol.io/v0/servers still returns 200 (both API versions live as of 2026-06-10)",
+      "health": "https://registry.modelcontextprotocol.io/v0.1/health => {\"status\":\"ok\",\"github_client_id\":\"Iv23liUydBbI7Z2Q9bOZ\"}",
+      "shearline_name_free": "search=shearline returns {servers:[],metadata:{count:0}} — name unclaimed as of 2026-06-10"
+    },
+    "pypi_name_availability_2026_06_10": {
+      "shearline": "404 on pypi.org/pypi/shearline/json — available",
+      "shearline-mcp": "404 — available"
+    }
+  },
+
+  "python_sdk": {
+    "repo": "https://github.com/modelcontextprotocol/python-sdk (default branch main, pushed 2026-06-10)",
+    "released_version_on_pypi": "mcp 1.27.2 (requires-python >=3.10); this exact version is installed in the shearline venv and was smoke-tested.",
+    "imports": {
+      "server": "from mcp.server.fastmcp import FastMCP, Context",
+      "types": "from mcp.types import CallToolResult, TextContent, Icon",
+      "stdio_client": "from mcp import ClientSession, StdioServerParameters; from mcp.client.stdio import stdio_client",
+      "streamable_http_client": "from mcp.client.streamable_http import streamablehttp_client  # yields (read, write, get_session_id)"
+    },
+    "fastmcp_constructor_kwargs_1_27_2": {
+      "verified_by": "inspect.signature(FastMCP.__init__) on installed 1.27.2",
+      "kwargs": "name=None, instructions=None, website_url=None, icons=None, auth_server_provider=None, token_verifier=None, event_store=None, retry_interval=None, tools=None, debug=False, log_level='INFO', host='127.0.0.1', port=8000, mount_path='/', sse_path='/sse', message_path='/messages/', streamable_http_path='/mcp', json_response=False, stateless_http=False, warn_on_duplicate_resources=True, warn_on_duplicate_tools=True, warn_on_duplicate_prompts=True, dependencies=(), lifespan=None, auth=None, transport_security=None",
+      "host_port": "YES — FastMCP(host=..., port=...) works directly; also reachable via instance.settings.host/.port; Settings is a pydantic BaseSettings with env prefix FASTMCP_ (e.g. FASTMCP_PORT=9000) and .env file support."
+    },
+    "run_api": {
+      "signature": "mcp.run(transport: Literal['stdio','sse','streamable-http'] = 'stdio', mount_path: str | None = None) -> None  (synchronous; wraps anyio.run)",
+      "stdio": "mcp.run()  # default",
+      "streamable_http": "mcp.run(transport='streamable-http')  # serves uvicorn on settings.host:settings.port at path settings.streamable_http_path (default /mcp)",
+      "sse_status": "NOT removed in 1.27.2, but README states: 'SSE transport is being superseded by Streamable HTTP transport'. Use streamable-http for anything new.",
+      "production_recommendation": "README: streamable HTTP is the recommended production transport; use stateless_http=True and json_response=True for optimal scalability.",
+      "asgi_mounting": "mcp.streamable_http_app() returns a Starlette app to Mount(); requires running mcp.session_manager.run() in the outer lifespan; mounted path becomes <mount>/mcp unless settings.streamable_http_path='/'.",
+      "cors_note": "Browser clients need CORSMiddleware with expose_headers=['Mcp-Session-Id']."
+    },
+    "tool_declaration": {
+      "decorator": "@mcp.tool()  — NOTE the parentheses; decorator params: name, title, description, annotations, icons, meta, structured_output (all optional)",
+      "typed_params": "Plain Python type hints on the function generate inputSchema via pydantic (verified: def add(a: int, b: int) -> int produced required ['a','b'] integer properties).",
+      "context_injection": "Add a param annotated Context (e.g. ctx: Context) to get logging/progress: await ctx.info(...), await ctx.report_progress(progress=, total=, message=)."
+    },
+    "structured_output": {
+      "default_behavior": "Tools return structured results AUTOMATICALLY when the return annotation is compatible; outputSchema is generated and results are validated against it. Unstructured text content is ALSO returned for backward compat.",
+      "supported_returns": "Pydantic BaseModel, TypedDict, dataclasses/classes with type hints, dict[str, T]; primitives and generics (str/int/float/bool/list/tuple/Optional) are wrapped as {'result': value}.",
+      "verified_live": "add()->int gave structuredContent {'result': 5} (wrapped); wx()->WeatherData(BaseModel) gave structuredContent {'temperature_c': 22.5, 'condition': 'sunny'} with full outputSchema incl. Field descriptions; stats()->dict[str,float] gave outputSchema {additionalProperties:{type:number}} and exact dict back.",
+      "opt_out": "@mcp.tool(structured_output=False) suppresses structured classification.",
+      "full_control": "Return mcp.types.CallToolResult directly (content=[TextContent(...)], structuredContent={...}, _meta={...}); must not be Optional/Union — for empty results return CallToolResult(content=[])."
+    },
+    "smoke_test_results": {
+      "stdio": "fixtures/python_sdk_smoke_stdio.json — list_tools inputSchema/outputSchema + 3 tool calls, all structuredContent correct",
+      "streamable_http": "fixtures/python_sdk_smoke_streamable_http.json — FastMCP(host='127.0.0.1', port=8765, stateless_http=True, json_response=True), client connected to http://127.0.0.1:8765/mcp, serverInfo {name:'smoke', version:'1.27.2'}, protocolVersion '2025-11-25'"
+    },
+    "deprecations_and_upcoming_breakage": {
+      "sse": "sse transport still works in 1.27.2 but is superseded by streamable-http; do not build new code on it.",
+      "fastmcp_rename_on_main": "WARNING (verified 2026-06-10): python-sdk main branch has RENAMED mcp.server.fastmcp -> mcp.server.mcpserver with class MCPServer ('A more ergonomic interface for MCP servers'); src/mcp/server/fastmcp/ no longer exists on main while the README still shows FastMCP imports. The released 1.27.2 wheel still ships mcp/server/fastmcp/. PIN mcp<2 (or mcp~=1.27) in pyproject to avoid breakage when the rename ships."
+    }
+  },
+
+  "server_json_skeleton_shearline": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.lostnumber07/shearline",
+    "title": "SHEARLINE",
+    "description": "Severe-weather MCP server: NWS warnings, SPC outlooks, point environments, MRMS, storm reports",
+    "repository": {
+      "url": "https://github.com/lostnumber07/shearline",
+      "source": "github"
+    },
+    "websiteUrl": "https://github.com/lostnumber07/shearline",
+    "version": "1.0.0",
+    "packages": [
+      {
+        "registryType": "pypi",
+        "registryBaseUrl": "https://pypi.org",
+        "identifier": "shearline-mcp",
+        "version": "1.0.0",
+        "runtimeHint": "uvx",
+        "transport": {
+          "type": "stdio"
+        }
+      }
+    ]
+  },
+  "skeleton_notes": [
+    "Server name uses a SLASH not a dot: io.github.lostnumber07/shearline (the task phrase 'io.github.lostnumber07.shearline' would FAIL the schema pattern — exactly one '/' required, and GitHub auth requires the io.github.<login>/ prefix).",
+    "description above is 96 chars — schema caps it at 100; trim before adding anything.",
+    "identifier 'shearline-mcp' is a placeholder; both 'shearline' and 'shearline-mcp' were unclaimed on PyPI as of 2026-06-10. Whatever is chosen must match the published PyPI project name exactly.",
+    "Package 'version' should match the PyPI release version and is bumped in BOTH places (top-level + packages[0]) on every publish.",
+    "Add '<!-- mcp-name: io.github.lostnumber07/shearline -->' on its own line in README.md before the PyPI upload, or registry publish fails with 'Registry validation failed for package'.",
+    "If env vars are needed later, add packages[0].environmentVariables: [{name, description, isRequired, isSecret, default, format}]."
+  ]
+}
