@@ -1,0 +1,92 @@
+{
+  "source_id": "iem-historical",
+  "verified_utc": "2026-06-13T19:10Z",
+  "purpose": "Verify the lsrs_by_point endpoint serves ARBITRARY PAST single-calendar-day windows for a 'what hit this point on this date' tool, BEFORE writing code.",
+  "endpoint": {
+    "url": "https://mesonet.agron.iastate.edu/api/1/nws/lsrs_by_point.geojson",
+    "method": "GET",
+    "content_type": "application/vnd.geo+json",
+    "validation_stack": "FastAPI + Pydantic (structured HTTP 422 JSON {'detail':[...]} on bad/missing params)",
+    "params": {
+      "lon": "REQUIRED, decimal deg E. Missing -> HTTP 422 {'type':'missing','loc':['query','lon']}",
+      "lat": "REQUIRED, decimal deg N. Missing -> HTTP 422.",
+      "radius_miles": "0 < radius_miles < 1000 STRICTLY. 999=OK(200), 1000=HTTP 422 'Input should be less than 1000', 1001/5000=422. Mutually-usable with radius_degrees.",
+      "radius_degrees": "alternative to radius_miles, < 10. radius_degrees=0.5 verified 200.",
+      "begints": "UTC ISO datetime. Tolerant parser: 'YYYY-MM-DDTHH:MM:SSZ', WITHOUT trailing Z, and '+00:00' offset ALL accepted and ALL treated as UTC (identical 43-feature result). Malformed value -> HTTP 422 'datetime_from_date_parsing'.",
+      "endts": "UTC ISO datetime, same parser as begints."
+    }
+  },
+  "CRITICAL_both_time_params_required": {
+    "claim": "BOTH begints AND endts required or the time filter is SILENTLY IGNORED.",
+    "VERIFIED_TRUE": true,
+    "evidence_2024-05-07_r50_OKC": {
+      "begints+endts": "HTTP 200, 43 features (the correct single-day window)",
+      "begints_only": "HTTP 200, 6961 features (ENTIRE all-time history at point - filter ignored, NO error)",
+      "endts_only": "HTTP 200, 6961 features (filter ignored, NO error)",
+      "neither": "HTTP 200, 6961 features (filter ignored, NO error)"
+    },
+    "implementer_warning": "A missing/empty begints OR endts does NOT 422 - it returns the full multi-thousand-feature point history with HTTP 200. The tool MUST always send both, and should sanity-check that returned 'valid' timestamps fall inside the requested window."
+  },
+  "arbitrary_past_windows": {
+    "VERIFIED_TRUE": true,
+    "single_day_query_used_for_fixture": {
+      "lon": -97.52, "lat": 35.47, "radius_miles": 50,
+      "begints": "2024-05-07T00:00:00Z", "endts": "2024-05-07T23:59:59Z",
+      "result": "HTTP 200, 43 features, 22610 bytes raw; 0 features outside requested UTC day",
+      "type_counts": {"H": 8, "F": 2, "R": 1, "G": 9, "D": 20, "T": 3},
+      "valid_range": "2024-05-07T02:13:00Z -> 2024-05-07T05:12:00Z (OKC 7 May 2024 evening/overnight severe event)",
+      "why_chosen": "Found by scanning wide window 2024-04-01..2024-06-15 (465 feats); 2024-05-07 was the busiest at 100mi (69 feats incl 9 tornadoes). At radius 50 it has 3 tornadoes + hail + wind + damage + flash flood = good multi-type populated single day."
+    },
+    "second_day_confirmation": {
+      "date": "2025-03-14 .. 2025-03-15", "radius_miles": 50,
+      "result": "HTTP 200, 23 features (all type N = NON-TSTM WND GST), proves repeatability for a different past year/season"
+    }
+  },
+  "data_floor_and_quality_cliff": {
+    "endpoint_floor_at_this_OKC_point": "2005-06-09T15:40:00Z is the OLDEST record returned by an all-history pull (radius_miles=50, no time filter, 6961 feats).",
+    "pre_2005_returns_EMPTY_not_error": "Explicit windows 2002 May-Jun, 2003 May-Jun, 2004 May-Jun, AND 2005 May ALL return HTTP 200 with 0 features. So the realistic floor here is mid-2005, NOT 2002 as the legacy lsrs-table note claims. The /api/1/nws/lsrs_by_point service appears to query a narrower slice than the raw lsrs table.",
+    "per_year_density_climbs": "2005:113, 2006:157, 2007:254, 2008:378, 2009:307, 2010:253, 2011:296, 2012:214, 2013:396, 2014:169, 2015:412, 2016:202, 2017:333, 2018:214 (counts within 50mi). No abrupt cliff after 2005; density is event-driven not a coverage gap. Treat ~2007+ as solidly populated; 2005-2006 thinner.",
+    "implementer_warning": "Do NOT advertise pre-2005 coverage for this endpoint. An empty result for an old date is indistinguishable (same HTTP 200, empty FeatureCollection) from 'no reports that day' - cannot tell 'before data existed' from 'quiet day' from the response alone."
+  },
+  "row_limit_behavior": {
+    "NO_observable_cap": "Unlike the legacy /geojson/lsr.geojson (LIMIT 10000), lsrs_by_point returned 37663 features (radius 500mi, full year 2024) and 300451 features (radius 999mi, 2 years 2023-2024), BOTH HTTP 200. No truncation field, no 413, no cap hit.",
+    "implementer_warning": "A wide radius + long window can return HUNDREDS OF THOUSANDS of features = tens of MB JSON. For a single-day point tool keep radius_miles small (<=50) and window to one calendar day; otherwise add client-side guardrails. There is NO server-side safety limit to rely on."
+  },
+  "per_feature_schema_HISTORICAL": {
+    "identical_to_live_bypoint_baseline": true,
+    "top_level_keys": ["type", "name", "crs", "features"],
+    "name": "pyogrio_<hex> (volatile per-request; do not depend on)",
+    "crs": "{'type':'name','properties':{'name':'urn:ogc:def:crs:OGC:1.3:CRS84'}} (lon,lat order)",
+    "NO_count_key": "no top-level 'count' (the legacy /geojson service differs)",
+    "properties": {
+      "valid": "str UTC 'YYYY-MM-DDTHH:MM:SSZ' (event time)",
+      "type": "str 1-char LSR class code (T/H/G/D/N/F/R/E/... same code table as live)",
+      "typetext": "str uppercase display text e.g. 'TORNADO','HAIL','TSTM WND GST','TSTM WND DMG'",
+      "magnitude": "NUMBER (float) or null. null for T/D/F (no magnitude); float for H(inch)/G(mph)/R(inch). NOTE: this endpoint returns magnitude as a NUMBER, not the legacy string. No 0.0 sentinel observed.",
+      "unit": "str or null. 'Inch' (hail/rain), 'MPH' (wind). null when no magnitude.",
+      "qualifier": "str or null. 'M'=measured, 'E'=estimated. null when no magnitude.",
+      "city": "str location, may be relative e.g. '8 S Omega','4 SSE Carney'",
+      "county": "str county name",
+      "state": "str 2-char abbr",
+      "source": "str e.g. 'Public','Mesonet','Official NWS Obs'",
+      "remark": "str free text or null",
+      "wfo": "str 3-char issuing office e.g. 'OUN'",
+      "product_id": "str e.g. '202405070244-KOUN-NWUS54-LSROUN'. WARNING: product_id timestamp prefix can be DAYS AFTER the event 'valid' time (delayed LSR issuance) - e.g. an event valid 2024-05-07T03:58Z had product_id '202405100346-...'. Do NOT derive event date from product_id; use 'valid'.",
+      "product_id_summary": "null in this sample (43/43 null)",
+      "ugc": "str e.g. 'OKC073' (county UGC zone)",
+      "lon": "float deg E (also geometry.coordinates[0])",
+      "lat": "float deg N (also geometry.coordinates[1])"
+    },
+    "fields_ABSENT_vs_legacy_geojson_lsr_service": ["magf", "st"],
+    "geometry": "Point [lon,lat], 0.01-deg precision",
+    "ALL_17_props_present_on_every_feature": "43/43 features carry all 17 keys (no per-feature key omission)"
+  },
+  "data_quality_gotchas": [
+    "CORRECTED reports can be internally inconsistent: caught a feature with type='R' (RAIN) carrying magnitude=59.0 unit='Inch' qualifier='M' whose remark was 'Corrects previous rain report... Its wind, not rain.' - type/unit/magnitude were NOT all updated together. Trust 'type' for classification but be aware unit/magnitude can be stale on corrections.",
+    "mPING / crowd-sourced reports appear with source='Public' and remark 'Report from mPING; time is estimated based on radar.' - 'valid' is radar-estimated, not observed.",
+    "product_id issuance can lag the event by days (see schema note) - never compute the storm date from product_id."
+  ],
+  "fixtures_saved": {
+    "iem_lsr_historical_sample.geojson": "RAW untrimmed 43-feature response from lon=-97.52 lat=35.47 radius_miles=50 begints=2024-05-07T00:00:00Z endts=2024-05-07T23:59:59Z. Real recorded response, indent=1 reformatted only (feature contents byte-faithful)."
+  }
+}

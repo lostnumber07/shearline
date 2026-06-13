@@ -18,6 +18,9 @@ TTL_MRMS = 120
 TTL_LSR = 300
 TTL_OUTLOOK = 1800
 TTL_RAP = 1800
+# Past storm reports are effectively immutable (rare late corrections), so a
+# historical-window query can be cached far longer than the live LSR feed.
+TTL_HISTORICAL = 21600  # 6 hours
 
 
 class TTLCache:
