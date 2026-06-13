@@ -97,6 +97,7 @@ Every tool returns this shape (assembled by `envelope.py`):
 
 ```jsonc
 {
+  "schema_version": "1.0",                  // semver of the I/O contract
   "data":           { /* numeric/structured fields, units in the key names */ },
   "interpretation": "2-5 plain-language analyst sentences",
   "degraded":       ["source-id", ...],   // empty when all upstreams healthy
@@ -111,6 +112,36 @@ Every tool returns this shape (assembled by `envelope.py`):
   say "status unknown," never "all clear."
 - Tools are annotated `-> dict[str, Any]` so the MCP SDK emits a structured
   `outputSchema` and `structuredContent`, not just text.
+
+---
+
+## Stability contract
+
+The envelope is a **public contract**: integrators may depend on the field names.
+`schema_version` (in `envelope.py`, currently `1.0`) tracks that contract under
+semantic versioning:
+
+- **MAJOR** bump — a *breaking* change: renaming/removing/retyping a `data` field,
+  removing a tool, or renaming/removing/retyping a tool parameter.
+- **MINOR** bump — a *backward-compatible addition*: a new tool, a new optional
+  parameter, or a new `data` field that doesn't disturb existing ones.
+
+Two guards keep the contract honest:
+
+1. **`tests/test_schema_lock.py`** snapshots every tool's MCP `inputSchema`
+   (parameter names/types/defaults/required) and `outputSchema`, plus
+   `schema_version`, into `tests/tools_schema_snapshot.json`. Any change to the
+   *call* surface fails the suite (offline, in CI) with a unified diff. Making the
+   change deliberately means bumping `SCHEMA_VERSION` and regenerating:
+   `UPDATE_SCHEMA_SNAPSHOT=1 uv run pytest tests/test_schema_lock.py` — so the
+   version bump and the contract change land together in one reviewable diff.
+2. **`scripts/canary.py`** asserts the presence and type of each tool's key `data`
+   fields live, so an output-field rename surfaces there too.
+
+The MCP `outputSchema` is generic (`object`/`additionalProperties`) because tools
+return `dict[str, Any]`; the *field-level* output contract is therefore guarded by
+the canary's field checks and each tool's offline tests rather than by the
+declared schema alone.
 
 ---
 

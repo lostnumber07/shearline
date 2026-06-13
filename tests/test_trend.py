@@ -125,7 +125,7 @@ async def test_fetch_forecast_profiles_anchors_and_tags_hours():
 async def test_tool_returns_trend_envelope():
     respx.get(rap.FILTER_URL).respond(200, content=f03_bytes())
     out = await server.get_environment_trend(OKC_LAT, OKC_LON)
-    assert set(out) == {"data", "interpretation", "degraded", "disclaimer"}
+    assert set(out) == {"schema_version", "data", "interpretation", "degraded", "disclaimer"}
     assert out["disclaimer"] == DISCLAIMER
     assert out["degraded"] == []
     assert out["data"]["forecast_hours"] == [0, 1, 3, 6]
