@@ -1,0 +1,48 @@
+name: canary
+
+# Live upstream drift detector. Unlike CI (offline, mocked), this hits the real
+# NOAA/IEM/AWS endpoints once a day and fails loudly if any source's schema has
+# drifted (renamed field, moved bucket, changed sentinel) or stays unreachable.
+
+on:
+  schedule:
+    - cron: "0 12 * * *" # daily at 12:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write # so a failing run can open a tracking issue
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run live canary
+        run: uv run python scripts/canary.py
+
+      - name: Open tracking issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          title="Canary failed: possible upstream drift ($(date -u +%Y-%m-%d))"
+          # Avoid duplicate issues if one is already open.
+          if gh issue list --label canary --state open --search "$title" | grep -q .; then
+            echo "An open canary issue already exists; skipping."
+          else
+            gh issue create \
+              --title "$title" \
+              --label canary \
+              --body "The daily live canary failed — an upstream data source may have changed its schema, moved, or gone down. See the failed run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. If it's schema drift, the relevant \`sources/*.py\` module needs updating (and its docstring + fixtures re-recorded)." \
+              || echo "Could not create issue (label may not exist yet); the run failure itself is the alert."
+          fi

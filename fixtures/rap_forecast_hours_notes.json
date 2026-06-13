@@ -1,0 +1,104 @@
+{
+  "source_id": "rap-forecast-hours",
+  "verified_utc": "2026-06-13T19:10Z",
+  "verified_against": "live NOMADS rap.prod, cycle t18z 2026-06-13",
+  "summary": "RAP awp130pgrbfXX forecast-hour files exist with IDENTICAL naming, grib-filter params, var/lev list, group structure, units, and cfgrib decode recipe as the already-verified f00. The ONLY per-message difference vs f00 is the forecast-time token ('anl' -> 'N hour fcst'). Extending the f00 point-environment to a trend tool is a pure (cycle, fXX) loop over the same fetch+decode code, swapping 'f00' -> 'fXX' in the filename and reading step/valid_time off the dataset.",
+
+  "directory": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/rap/prod/rap.YYYYMMDD/",
+  "filename_pattern": "rap.tHHz.awp130pgrbfXX.grib2 (+ .idx sibling)  HH=00..23, XX=00..21 or 00..51",
+  "filter_endpoint": "https://nomads.ncep.noaa.gov/cgi-bin/filter_rap.pl",
+  "filter_file_param": "rap.tHHz.awp130pgrbfXX.grib2  (ONLY the file= value changes from f00; dir/var_/lev_/lonlat params are byte-identical to the f00 request)",
+
+  "forecast_range_by_cycle": {
+    "standard_cycles": {
+      "cycles_utc": ["00", "06", "12", "18"],
+      "fhrs": "f00..f21 (22 files), hourly",
+      "max_fhr": 21
+    },
+    "extended_cycles": {
+      "cycles_utc": ["03", "09", "15", "21"],
+      "fhrs": "f00..f51 (52 files), hourly",
+      "max_fhr": 51
+    },
+    "note": "Confirmed live 2026-06-13: t00/06/12/18z each had exactly 22 awp130 fXX files (max f21); t03/09/15/21z each had exactly 52 (max f51). So requesting f06 etc. is always safe on any cycle; f22..f51 ONLY exist on the 03/09/15/21z cycles."
+  },
+
+  "files_confirmed_live_t18z_20260613": {
+    "rap.t18z.awp130pgrbf00.grib2": {"http": 200, "content_length": 17816979, "last_modified": "2026-06-13T18:47:36Z", "idx": 200},
+    "rap.t18z.awp130pgrbf01.grib2": {"http": 200, "content_length": 17875925, "last_modified": "2026-06-13T18:46:14Z", "idx": 200},
+    "rap.t18z.awp130pgrbf02.grib2": {"http": 200, "content_length": 18024853, "last_modified": "2026-06-13T18:48:04Z", "idx": 200},
+    "rap.t18z.awp130pgrbf03.grib2": {"http": 200, "content_length": 18165605, "last_modified": "2026-06-13T18:47:53Z", "idx": 200},
+    "rap.t18z.awp130pgrbf06.grib2": {"http": 200, "content_length": 18389210, "last_modified": "2026-06-13T18:50:47Z", "idx": 200}
+  },
+
+  "f03_subset_fixture": {
+    "file": "fixtures/rap_subset_okc_f03.grib2",
+    "bytes": 54108,
+    "magic": "GRIB",
+    "request_box": {"leftlon": -98.1, "rightlon": -96.9, "toplat": 36.1, "bottomlat": 34.9},
+    "cycle": "2026-06-13T18:00Z",
+    "decoded_time_cycle": "2026-06-13T18:00",
+    "decoded_step_ns": 10800000000000,
+    "decoded_step_hours": 3,
+    "decoded_valid_time": "2026-06-13T21:00",
+    "valid_time_equals_cycle_plus_step": true,
+    "subset_grid_dims": {"isobaricInhPa": 37, "y": 10, "x": 9},
+    "okc_nearest_gridpoint": {"y": 4, "x": 4, "lat": 35.460, "lon_0to360": 262.500, "lonW": -97.500},
+    "sample_values_okc_f03": {
+      "t2m_K": 309.26, "d2m_K": 292.37, "u10_ms": 3.94, "v10_ms": 6.30,
+      "sp_Pa": 96547.8, "orog_m": 374.6, "sfc_cape_Jkg": 2420.0, "sfc_cin_Jkg": -11.0,
+      "srh_0_1km_m2s2": 1.2, "srh_0_3km_m2s2": 52.0, "ustm_ms": 0.52, "vstm_ms": 2.33,
+      "ml_cape_Jkg_by_layer_Pa": {"9000": 2140.0, "18000": 2240.0, "25500": 2420.0},
+      "t_1000mb_K": 309.34, "t_100mb_K": 203.47
+    },
+    "nan_in_sampled_fields": false
+  },
+
+  "decode_recipe_identical_to_f00": {
+    "engine": "xarray.open_dataset(path, engine='cfgrib', decode_timedelta=True, backend_kwargs={'filter_by_keys': {...}, 'indexpath': ''})",
+    "groups_confirmed_for_f03": {
+      "isobaricInhPa": {"vars": {"gh": "gpm", "t": "K", "r": "%", "u": "m s**-1", "v": "m s**-1"}, "levels": "1000->100 hPa, 37 levels (index0=1000)"},
+      "surface": {"vars": {"sp": "Pa", "orog": "m", "t": "K", "cape": "J kg**-1", "cin": "J kg**-1"}},
+      "heightAboveGround level=2": {"vars": {"t2m": "K", "d2m": "K", "r2": "%"}},
+      "heightAboveGround level=10": {"vars": {"u10": "m s**-1", "v10": "m s**-1"}},
+      "heightAboveGroundLayer shortName=hlcy": {"vars": {"hlcy": "m**2 s**-2"}, "layer_coord": [1000.0, 3000.0]},
+      "heightAboveGroundLayer shortName=ustm": {"vars": {"ustm": "m s**-1"}},
+      "heightAboveGroundLayer shortName=vstm": {"vars": {"vstm": "m s**-1"}},
+      "pressureFromGroundLayer": {"vars": {"cape": "J kg**-1", "cin": "J kg**-1"}, "layer_coord_Pa": [9000.0, 18000.0, 25500.0]}
+    },
+    "same_silent_data_loss_traps_apply": [
+      "heightAboveGround alone drops u10/v10 -> filter level=2 and level=10 separately",
+      "heightAboveGroundLayer alone returns only hlcy and drops ustm/vstm -> filter shortName per var"
+    ],
+    "to_get_valid_time": "Read iso['valid_time'] (== iso['time'] + iso['step']). step is a numpy timedelta64; 3h shows as 10800000000000 ns. Trust valid_time off the dataset rather than computing cycle+fXX by hand."
+  },
+
+  "idx_structural_identity": {
+    "f00_message_count_t18z": 355,
+    "f03_message_count_t18z": 359,
+    "diff": "Every f00 message has a matching f03 message at the same var:level; the only change is the 3rd .idx token: 'anl' (f00) -> '3 hour fcst' (f03). f03 has 4 EXTRA messages, all surface accumulated-precip fields with no analysis equivalent: ACPCP:surface, APCP:surface, FROZR:surface, WEASD:surface (a second '2-3 hour acc fcst' bucket alongside the '0-3 hour acc fcst' bucket).",
+    "project_vars_unaffected": "NONE of the 4 extras are in the project's var list. All 12 project vars (TMP DPT RH HGT UGRD VGRD PRES CAPE CIN HLCY USTM VSTM) are present in f03 as INSTANTANEOUS fields ('N hour fcst', never 'acc fcst'), with the same message counts the f00 recipe expects (TMP 47, DPT 1 @2m only, RH 46, HGT 50, UGRD/VGRD 47, PRES 6, CAPE 5, CIN 4, HLCY 2, USTM 1, VSTM 1)."
+  },
+
+  "accumulated_vs_instantaneous": {
+    "instantaneous": "All state vars the tool uses (T/DPT/RH/HGT/U/V/PRES/CAPE/CIN/HLCY/USTM/VSTM) are instantaneous diagnostics valid AT valid_time. Decode + point-extract is identical to f00.",
+    "accumulated_present_but_unused": "fXX files add accumulation buckets (APCP/ACPCP/ASNOW/WEASD/FROZR/SSRUN/BGRUN with tokens like '0-3 hour acc fcst' and '2-3 hour acc fcst'). These are NOT requested by the project and never enter the decode (we don't pass var_APCP etc.), so the accumulated-field interpretation trap does not apply to this tool."
+  },
+
+  "posting_progression_and_walkback": {
+    "f00_post_lag": "~48 min after cycle hour (t18z f00 Last-Modified 18:47:36Z).",
+    "fXX_post_progression": "Forecast hours post within ~10 min of f00. Observed t18z: f00 18:47:36, f06 18:50:47, f09 18:51:46, f12 18:53:08, f15 18:54:16, f18 18:55:51, f21 18:56:56. Long-range (f06+) is monotonic and always LATER than f00.",
+    "non_monotonic_caveat": "The first 1-3 fhrs are NOT strictly ordered after f00: t18z f01 (18:46:14) and f03 (18:47:53 ~= f00) finished essentially at the same time as / slightly before f00. So do NOT assume 'if f00 exists, all fXX up to N exist' for very fresh cycles -- a cycle can briefly have f00 but a not-yet-complete f02/f03. Robust pattern: HEAD the SPECIFIC fXX file(s) you need (200 + GRIB magic), and apply the SAME walk-back-on-missing-cycle logic as f00 (try newest cycle, fall back up to 4 hours, rolling into previous day's dir near 00Z) -- but ALSO be prepared for an individual fXX 404 on the otherwise-present latest cycle and either wait or fall back one cycle.",
+    "latest_cycle_today": "t18z (t19z f00 = 404 at probe time 19:xxZ; next hourly cycle posts ~19:47Z).",
+    "filter_pl_404_behavior": "Same as f00: filter_rap.pl returns HTTP 404 with an HTML 'data file is not present' body when the requested file/cycle is absent, so probing via the filter endpoint also works for fXX."
+  },
+
+  "gotchas": [
+    "Extended forecast hours (f22..f51) exist ONLY on the 03/09/15/21z cycles; on 00/06/12/18z the max is f21. Guard any requested fhr against the cycle's max or you will 404.",
+    "Trust dataset valid_time/step rather than computing cycle+fhr by hand (handles step as timedelta64).",
+    "Same two cfgrib silent-drop traps as f00 (heightAboveGround level split; heightAboveGroundLayer shortName split).",
+    "For very fresh cycles an individual fXX may 404 even though f00 is up (files post over ~10 min and not in strict fXX order). HEAD the exact fXX you need.",
+    "f03 adds 4 surface accumulated-precip messages vs f00; harmless because the project never requests those vars.",
+    "curl --http1.1 with the full var/lev query string was rejected locally ('Malformed input to a URL function', a curl URL-parser quirk) -- the project's httpx path (http2 disabled) builds and sends the identical request cleanly over HTTP/1.1. Use httpx (as the existing rap.py does), not raw curl, for the filter GET."
+  ]
+}

@@ -1,0 +1,254 @@
+Severe Weather Data Inventory (SWDI)
+REST Web Services Usage:
+
+These web services use common URL syntax to query the SWDI database.
+The basic syntax is:
+https://www.ncdc.noaa.gov/swdiws/{outputFormat}/{dataset}/{dateRange}
+
+Optional query parameters may be added to produce statistics or filter results.
+
+---------------------------------------------------------------------------------
+-------- Required Paths ---------------------------------------------------------
+---------------------------------------------------------------------------------
+
+1) Output Formats
+    Output is supported in the following formats.  
+    These format values are substituted for {outputFormat} in the URL syntax example
+    
+    'json' - JSON is commonly used in web application development and is widely supported
+            by many programming languages.
+    'csv' - Comma-separated plain text which can be opened in MS Excel, OpenOffice, 
+            ArcGIS, etc...
+    'xml' - XML which can be opened in MS Excel, OpenOffice, etc...
+    'shp' - A .zip file containing the 4 ESRI Shapefile files 
+            (.shp, .shx, .dbf, .prj)
+    'kmz' - KMZ file which can be opened in Virtual Globe software such as 
+            Google Earth
+
+    Some operations such as statistics and periodOfRecord are only supported by the
+    'json', 'csv' and 'xml' output formats.
+
+
+2) Dataset
+    The following datasets are supported.  
+    These dataset values are substituted for {dataset} in the URL syntax example
+    
+    'nx3tvs'       - (Point)   NEXRAD Level-3 Tornado Vortex Signatures
+    'nx3meso'      - (Point)   NEXRAD Level-3 Mesocyclone Signatures
+    'nx3hail'      - (Point)   NEXRAD Level-3 Hail Signatures
+    'nx3structure' - (Point)   NEXRAD Level-3 Storm Cell Structure Information
+    'warn'         - (Polygon) Severe Thunderstorm, Tornado, Flash Flood and Special Marine warnings
+    'nldn'         - (Point)   Lightning strikes from Vaisala (At this time, only NOAA personnel may access the Vaisala NLDN lightning strike data, accessing the data through the NOAA VPN only)
+    
+    ':inv' may be added to any dataset name to display the inventory of available data 
+    for that dataset.  For example 'nx3hail:inv'.
+    
+3) Date Range
+    The following syntax is used to define date ranges.
+    These values are substituted for {dateRange} in the URL syntax example
+
+    Range syntax is 'startDate:endDate' or special option of 'periodOfRecord'    
+    Note that startDate is inclusive and endDate is exclusive.  All dates and
+    times are in GMT.  The current limit of the date range size is one year.
+    
+    'yyyymmdd', 'yyyymmdd:yyyymmdd', 'yyyymmddhh:yyyymmddhh' or 'yyyymmddhhmi:yyyymmddhhmi'
+    Examples:
+        20050601:20050607 - returns all data from June 1st, 2005 through June 6th, 2005
+        200506011030:200506011430 - returns all data from 
+            June 1st, 2005 between 10:30 and 14:30 GMT
+        
+    The special option of 'periodOfRecord' returns the beginning and ending 
+    dates for the specified dataset.
+    
+    
+---------------------------------------------------------------------------------
+-------- Optional Paths ---------------------------------------------------------
+---------------------------------------------------------------------------------
+
+The basic syntax is:
+https://www.ncdc.noaa.gov/swdiws/{outputFormat}/{dataset}/{dateRange}
+
+Additional paths may be added to limit the results and allow pagination.
+
+1) Limit the number of results
+    https://www.ncdc.noaa.gov/swdiws/{outputFormat}/{dataset}/{dateRange}/{numResults}
+
+    Any number from 1 to 10000000 may substituted for {numResults} in the URL 
+    syntax example.
+    
+
+2) Specify the starting row for results.  
+    https://www.ncdc.noaa.gov/swdiws/{outputFormat}/{dataset}/{dateRange}/{numResults}/{startRow}
+    
+    This can be used to control sets or pages of results where a certain number 
+    of results ( {numResults} )    are displayed on each page.
+
+    Any number from 1 to 10000000 may substituted for {startRow} in the URL 
+    syntax example.
+
+
+---------------------------------------------------------------------------------
+-------- Optional Query Parameters ----------------------------------------------
+---------------------------------------------------------------------------------
+
+Optional query parameters are specified by parameter=value pairs at the end of 
+the URL.  A '?' is used to indicate the start of the query string and '&' is used 
+to separate sets of parameter=value pairs.  Any combination of the following
+parameters may be used.
+
+The basic syntax is:
+https://www.ncdc.noaa.gov/swdiws/{outputFormat}/{dataset}/{dateRange}?{parameter1=value}&{parameter2=value}& ...
+
+
+1) Search By Bounding Box
+
+    Parameter   |   Possible Values
+    -----------------------------------------------------------------------------
+    bbox        |   Bounding box in format of minLon,minLat,maxLon,maxLat
+                |         ex) -91,30,-90,31
+                |   As of 05/2016 the order of the bounding box coordinates is strictly enforced. 
+
+    Example URL:
+    https://www.ncdc.noaa.gov/swdiws/geojson/nx3hail/20060505?bbox=-102,31,-101,32
+    "Get all 'nx3hail' within the bounding box (-102,31,-101,32) and return as GeoJSON"
+
+2) Search By 0.1 Degree Tile
+
+    Parameter   |   Possible Values
+    -----------------------------------------------------------------------------
+    tile        |   Coordinate in lon,lat decimal degree format 
+                |         ex) -95.45,36.88
+                |   The lat/lon values are rounded to the nearest tenth of degree.
+                |   For the above example, the matching tile would contain values from
+                |   -95.4500 to -95.5499 and 36.8500 to 36.9499
+
+    Example URL:
+    https://www.ncdc.noaa.gov/swdiws/csv/nx3tvs/20060506:20060507?tile=-102.12,32.62
+    "Get all 'nx3tvs' within the tile -102.1/32.6 (-102.15,32.55,-102.25,32.65) and return as CSV"
+
+
+3) Produce Statistics
+
+    These operations are only supported with the 'json', 'csv' or 'xml' output types.
+
+    Parameter   |   Possible Values
+    -----------------------------------------------------------------------------
+    stat        |   'count' - returns number of results only (no actual data)
+                |   'tilesum:$longitude,$latitude' - returns daily feature counts for a tenth 
+                    of a degree grid centered at the nearest tenth of a degree
+                    to the supplied values 
+                |   'countGroupBy':'$value' - summarizes based on a specified column/attribute.  
+                    This will show the count of features for each unique value of the specified column.
+
+    Example URL:
+    https://www.ncdc.noaa.gov/swdiws/csv/nx3structure/20060505/10
+    "Get the first 10 nx3structure results for 2006-05-05 and return as CSV"
+    
+    https://www.ncdc.noaa.gov/swdiws/csv/nx3tvs/20060505:20060516?stat=tilesum:-102.0,32.7
+    "Get daily count nx3tvs features on .1 degree grid centered at latitude = 32.7 and longitude = -102.0 and return as CSV"
+
+    https://www.ncdc.noaa.gov/swdiws/csv/nx3hail/20110521/10?stat=countGroupBy:WSR_ID
+    "Get the count of hail signatures for each radar site for one day and print the top 10"
+
+
+5) Filter by Attribute/Column value
+
+    Filter the results by a column value.
+
+
+    Parameter   |   Possible Values
+    -----------------------------------------------------------------------------
+    filterBy    |   '$columnName:$columnValue' - returns results only where the
+                    specified column name results value matches the value for 
+                    the specified column value.
+    filterBy[]  |   '$columnName:$columnValue' - same as 'filterBy' except that
+                    it can be repeated to indicate multiple matches.  For multiple
+                    filters on the same column, the 'OR' operator is used.  The
+                    'AND' operator is automatically used between separate columns. 
+                    See example below.
+
+
+    Examples:
+    https://www.ncdc.noaa.gov/swdiws/csv/nx3hail/20110521/10?filterBy=WSR_ID:KFWS
+    "Show the first 10 hail results for 2011-05-21, only where the WSR_ID is 'KFWS'"
+ 
+    https://www.ncdc.noaa.gov/swdiws/csv/nx3hail/20110521/10?filterBy=SEVPROB:100
+    "Show the first 10 hail results for 2011-05-21, only where the 'SEVPROB' values are '100'"
+
+    https://www.ncdc.noaa.gov/swdiws/csv/nx3hail/20110521?filterBy[]=WSR_ID:KGRK&filterBy[]=WSR_ID:KFWS
+    "... , only where WSR_ID is KGRK or KFWS"
+
+    https://www.ncdc.noaa.gov/swdiws/csv/nx3hail/20110521?filterBy[]=WSR_ID:KGRK&filterBy[]=WSR_ID:KFWS&filterBy[]=SEVPROB:100&filterBy[]=SEVPROB:50 
+    "... , only where WSR_ID is KGRK or KFWS and also where SEVPROB is 100 or 50"
+
+
+
+
+
+---------------------------------------------------------------------------------
+-------- Special "ID Query" Operation -------------------------------------------
+---------------------------------------------------------------------------------
+
+Certain datasets support an ID query to get verbose reports and text information.
+The pattern for these requests is:
+https://www.ncdc.noaa.gov/swdiws/{outputFormat}/{dataset}/id={id}
+The ID is a column in the regular date range requests.
+
+Example URL:
+https://www.ncdc.noaa.gov/swdiws/csv/warn/id=533623 
+"Get the warning text for the warning with ID=533623"
+
+
+
+---------------------------------------------------------------------------------
+-------- Examples ---------------------------------------------------------------
+---------------------------------------------------------------------------------
+
+
+"Select all NEXRAD Level-3 Tornado Vortex Signatures for May 5th, 2006 
+    - display as comma-delimited text":    
+https://www.ncdc.noaa.gov/swdiws/csv/nx3tvs/20060505:20060506
+
+
+"Select all NEXRAD Level-3 Tornado Vortex Signatures between 10:30 and 
+    11:30 GMT on May 5th, 2006 - export as Shapefile":
+https://www.ncdc.noaa.gov/swdiws/shp/nx3tvs/200605051030:200605051130
+
+
+"Select first 25 NEXRAD Level-3 Tornado Vortex Signatures 
+    for May 5th, 2006 - display as GeoJSON":
+https://www.ncdc.noaa.gov/swdiws/geojson/nx3tvs/20060505:20060506/25
+
+
+"Select number of NEXRAD Level-3 Tornado Vortex Signatures in 2006 
+    - display as comma-delimited text":
+https://www.ncdc.noaa.gov/swdiws/csv/nx3tvs/20060101:20070101?stat=count
+
+
+"Get period of record for the NEXRAD Storm Structure in the SWDI
+    - display as comma-delimited text":
+https://www.ncdc.noaa.gov/swdiws/csv/nx3structure/
+
+"Get a list of datasets in the SWDI - display as XML":
+https://www.ncdc.noaa.gov/swdiws/xml
+
+"Show the number of records in the 0.10 deg tile encompassing the specified lat/lon"
+https://www.ncdc.noaa.gov/swdiws/csv/nx3tvs/20060509?stat=tilesum:-93.2,34.5
+
+"Show the inventory of NEXRAD Hail data files processed from 2010 to 2012 in JSON format"
+https://www.ncdc.noaa.gov/swdiws/json/nx3hail:inv/20100101:20121231
+
+---------------------------------------------------------------------------------
+-------- Special Notes ----------------------------------------------------------
+---------------------------------------------------------------------------------
+
+1) All dates and times are in GMT.
+2) All latitude and longitude values for input parameters and output data are in
+    the WGS84 datum.
+
+---------------------------------------------------------------------------------
+Release notes: 
+ - updated 2020-07-27, removed outdated example in this file.
+ - updated 2020-07-29, updated lightning access for NOAA VPN Users.
+ - updated 2020-11-20, fix Java exception logging.
+

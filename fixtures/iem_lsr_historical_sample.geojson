@@ -1,0 +1,1259 @@
+{
+ "type": "FeatureCollection",
+ "name": "pyogrio_e05f4a537c92496f8469ed1f7c2b85bf",
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+  }
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T02:13:00Z",
+    "type": "H",
+    "magnitude": 1.0,
+    "city": "8 S Omega",
+    "county": "Kingfisher",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Report from mPING; time is estimated based on radar.",
+    "wfo": "OUN",
+    "typetext": "HAIL",
+    "product_id": "202405070244-KOUN-NWUS54-LSROUN",
+    "unit": "Inch",
+    "qualifier": "E",
+    "ugc": "OKC073",
+    "product_id_summary": null,
+    "lon": -98.18,
+    "lat": 35.75
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -98.18,
+     35.75
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T02:24:00Z",
+    "type": "F",
+    "magnitude": null,
+    "city": "Kingfisher",
+    "county": "Kingfisher",
+    "state": "OK",
+    "source": "Emergency Mngr",
+    "remark": "Relayed through NWSChat, Flooding at Hwy 81 and 33 with traffic stopped.",
+    "wfo": "OUN",
+    "typetext": "FLASH FLOOD",
+    "product_id": "202405070228-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC073",
+    "product_id_summary": null,
+    "lon": -97.93,
+    "lat": 35.86
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.93,
+     35.86
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T02:40:00Z",
+    "type": "R",
+    "magnitude": 59.0,
+    "city": "4 SSE Marshall",
+    "county": "Logan",
+    "state": "OK",
+    "source": "Mesonet",
+    "remark": null,
+    "wfo": "OUN",
+    "typetext": "RAIN",
+    "product_id": "202405070248-KOUN-NWUS54-LSROUN",
+    "unit": "Inch",
+    "qualifier": "M",
+    "ugc": "OKC083",
+    "product_id_summary": null,
+    "lon": -97.6,
+    "lat": 36.1
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.6,
+     36.1
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T02:40:00Z",
+    "type": "G",
+    "magnitude": 59.0,
+    "city": "4 SSE Marshall",
+    "county": "Logan",
+    "state": "OK",
+    "source": "Mesonet",
+    "remark": "Corrects previous rain report from 4 SSE Marshall. Its wind, not rain.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND GST",
+    "product_id": "202405070253-KOUN-NWUS54-LSROUN",
+    "unit": "MPH",
+    "qualifier": "M",
+    "ugc": "OKC083",
+    "product_id_summary": null,
+    "lon": -97.6,
+    "lat": 36.1
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.6,
+     36.1
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T03:20:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "2 N Carney",
+    "county": "Lincoln",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Downed trees. FB report with picture. Time estimated from radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405101033-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC081",
+    "product_id_summary": null,
+    "lon": -97.02,
+    "lat": 35.84
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.02,
+     35.84
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T03:21:00Z",
+    "type": "H",
+    "magnitude": 1.5,
+    "city": "5 SE Guthrie",
+    "county": "Logan",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Report from mPING.",
+    "wfo": "OUN",
+    "typetext": "HAIL",
+    "product_id": "202405070326-KOUN-NWUS54-LSROUN",
+    "unit": "Inch",
+    "qualifier": "E",
+    "ugc": "OKC083",
+    "product_id_summary": null,
+    "lon": -97.36,
+    "lat": 35.83
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.36,
+     35.83
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T03:22:00Z",
+    "type": "H",
+    "magnitude": 1.5,
+    "city": "3 SE Guthrie",
+    "county": "Logan",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Report from mPING.",
+    "wfo": "OUN",
+    "typetext": "HAIL",
+    "product_id": "202405070326-KOUN-NWUS54-LSROUN",
+    "unit": "Inch",
+    "qualifier": "E",
+    "ugc": "OKC083",
+    "product_id_summary": null,
+    "lon": -97.39,
+    "lat": 35.85
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.39,
+     35.85
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T03:24:00Z",
+    "type": "H",
+    "magnitude": 1.75,
+    "city": "7 SSE Guthrie",
+    "county": "Logan",
+    "state": "OK",
+    "source": "Emergency Mngr",
+    "remark": null,
+    "wfo": "OUN",
+    "typetext": "HAIL",
+    "product_id": "202405070328-KOUN-NWUS54-LSROUN",
+    "unit": "Inch",
+    "qualifier": "E",
+    "ugc": "OKC083",
+    "product_id_summary": null,
+    "lon": -97.36,
+    "lat": 35.8
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.36,
+     35.8
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T03:39:00Z",
+    "type": "H",
+    "magnitude": 1.0,
+    "city": "3 N Tryon",
+    "county": "Lincoln",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Report from mPING.",
+    "wfo": "OUN",
+    "typetext": "HAIL",
+    "product_id": "202405070345-KOUN-NWUS54-LSROUN",
+    "unit": "Inch",
+    "qualifier": "E",
+    "ugc": "OKC081",
+    "product_id_summary": null,
+    "lon": -96.98,
+    "lat": 35.92
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -96.98,
+     35.92
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T03:58:00Z",
+    "type": "T",
+    "magnitude": null,
+    "city": "4 SSE Carney",
+    "county": "Lincoln",
+    "state": "OK",
+    "source": "Official NWS Obs",
+    "remark": "A TDS was observed on radar with a circulation northwest of Chandler. Investigation is ongoing.",
+    "wfo": "OUN",
+    "typetext": "TORNADO",
+    "product_id": "202405100346-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC081",
+    "product_id_summary": null,
+    "lon": -96.99,
+    "lat": 35.75
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -96.99,
+     35.75
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:02:00Z",
+    "type": "H",
+    "magnitude": 1.5,
+    "city": "3 N Gracemont",
+    "county": "Caddo",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Report from mPING.",
+    "wfo": "OUN",
+    "typetext": "HAIL",
+    "product_id": "202405070405-KOUN-NWUS54-LSROUN",
+    "unit": "Inch",
+    "qualifier": "E",
+    "ugc": "OKC015",
+    "product_id_summary": null,
+    "lon": -98.26,
+    "lat": 35.23
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -98.26,
+     35.23
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:20:00Z",
+    "type": "G",
+    "magnitude": 59.0,
+    "city": "2 SSW Minco",
+    "county": "Grady",
+    "state": "OK",
+    "source": "Mesonet",
+    "remark": null,
+    "wfo": "OUN",
+    "typetext": "TSTM WND GST",
+    "product_id": "202405070428-KOUN-NWUS54-LSROUN",
+    "unit": "MPH",
+    "qualifier": "M",
+    "ugc": "OKC051",
+    "product_id_summary": null,
+    "lon": -97.96,
+    "lat": 35.29
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.96,
+     35.29
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:21:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "3 ESE Tuttle",
+    "county": "Grady",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Uprooted tree, 1.5 miles south of Hwy 37 and Cemetery Road in Tuttle. FB report with picture. Time estimated from radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405100952-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC051",
+    "product_id_summary": null,
+    "lon": -97.76,
+    "lat": 35.27
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.76,
+     35.27
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:22:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "Tuttle",
+    "county": "Grady",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Uprooted tree. FB report with picture. Time based on radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405101048-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC051",
+    "product_id_summary": null,
+    "lon": -97.81,
+    "lat": 35.29
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.81,
+     35.29
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:25:00Z",
+    "type": "H",
+    "magnitude": 1.0,
+    "city": "3 W Stroud",
+    "county": "Lincoln",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Report from mPING.",
+    "wfo": "OUN",
+    "typetext": "HAIL",
+    "product_id": "202405070430-KOUN-NWUS54-LSROUN",
+    "unit": "Inch",
+    "qualifier": "M",
+    "ugc": "OKC081",
+    "product_id_summary": null,
+    "lon": -96.71,
+    "lat": 35.74
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -96.71,
+     35.74
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:25:00Z",
+    "type": "G",
+    "magnitude": 64.0,
+    "city": "2 SSW Minco",
+    "county": "Grady",
+    "state": "OK",
+    "source": "Mesonet",
+    "remark": null,
+    "wfo": "OUN",
+    "typetext": "TSTM WND GST",
+    "product_id": "202405070433-KOUN-NWUS54-LSROUN",
+    "unit": "MPH",
+    "qualifier": "M",
+    "ugc": "OKC051",
+    "product_id_summary": null,
+    "lon": -97.96,
+    "lat": 35.29
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.96,
+     35.29
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:29:00Z",
+    "type": "F",
+    "magnitude": null,
+    "city": "2 SSW Agra",
+    "county": "Lincoln",
+    "state": "OK",
+    "source": "Emergency Mngr",
+    "remark": "Highways 18 and 105 underwater.",
+    "wfo": "OUN",
+    "typetext": "FLASH FLOOD",
+    "product_id": "202405070429-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC081",
+    "product_id_summary": null,
+    "lon": -96.88,
+    "lat": 35.87
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -96.88,
+     35.87
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:30:00Z",
+    "type": "G",
+    "magnitude": 71.0,
+    "city": "2 SSW Minco",
+    "county": "Grady",
+    "state": "OK",
+    "source": "Mesonet",
+    "remark": null,
+    "wfo": "OUN",
+    "typetext": "TSTM WND GST",
+    "product_id": "202405070436-KOUN-NWUS54-LSROUN",
+    "unit": "MPH",
+    "qualifier": "M",
+    "ugc": "OKC051",
+    "product_id_summary": null,
+    "lon": -97.96,
+    "lat": 35.29
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.96,
+     35.29
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:30:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "3 N Bridge Creek",
+    "county": "Grady",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Report from mPING: 3-inch tree limbs broken; Power poles broken.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405070516-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC051",
+    "product_id_summary": null,
+    "lon": -97.71,
+    "lat": 35.28
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.71,
+     35.28
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:30:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "3 NW Bridge Creek",
+    "county": "Grady",
+    "state": "OK",
+    "source": "Trained Spotter",
+    "remark": "Powerlines and tree branches blown down. Radar estimated time.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405070537-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC051",
+    "product_id_summary": null,
+    "lon": -97.76,
+    "lat": 35.26
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.76,
+     35.26
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:30:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "1 S El Reno",
+    "county": "Canadian",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Damaged power poles (leaning). Facebook report. Time estimated from radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071748-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC017",
+    "product_id_summary": null,
+    "lon": -97.95,
+    "lat": 35.51
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.95,
+     35.51
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:37:00Z",
+    "type": "T",
+    "magnitude": null,
+    "city": "4 WNW Moore",
+    "county": "Cleveland",
+    "state": "OK",
+    "source": "NWS Storm Survey",
+    "remark": "Tornado moved from SW 104th and South May to just northwest of Valley Brook.",
+    "wfo": "OUN",
+    "typetext": "TORNADO",
+    "product_id": "202405100346-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC027",
+    "product_id_summary": null,
+    "lon": -97.55,
+    "lat": 35.36
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.55,
+     35.36
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:38:00Z",
+    "type": "G",
+    "magnitude": 69.0,
+    "city": "6 SW Oklahoma City",
+    "county": "Oklahoma",
+    "state": "OK",
+    "source": "ASOS",
+    "remark": null,
+    "wfo": "OUN",
+    "typetext": "TSTM WND GST",
+    "product_id": "202405070445-KOUN-NWUS54-LSROUN",
+    "unit": "MPH",
+    "qualifier": "M",
+    "ugc": "OKC109",
+    "product_id_summary": null,
+    "lon": -97.59,
+    "lat": 35.41
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.59,
+     35.41
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:39:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "5 S Moore",
+    "county": "Cleveland",
+    "state": "OK",
+    "source": "NWS Employee",
+    "remark": "Snapped tree.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071310-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC027",
+    "product_id_summary": null,
+    "lon": -97.5,
+    "lat": 35.27
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.5,
+     35.27
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:42:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "1 WNW Valley Brook",
+    "county": "Oklahoma",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Overturned semi-trailer. Time estimated from radar. Facebook report with picture.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071352-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC109",
+    "product_id_summary": null,
+    "lon": -97.5,
+    "lat": 35.41
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.5,
+     35.41
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:42:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "2 W Valley Brook",
+    "county": "Oklahoma",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Damage to Webster Middle School soccer goals. Facebook report with picture. Time estimated from radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071355-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC109",
+    "product_id_summary": null,
+    "lon": -97.51,
+    "lat": 35.4
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.51,
+     35.4
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:42:00Z",
+    "type": "H",
+    "magnitude": 1.0,
+    "city": "2 SE Valley Brook",
+    "county": "Oklahoma",
+    "state": "OK",
+    "source": "Trained Spotter",
+    "remark": null,
+    "wfo": "OUN",
+    "typetext": "HAIL",
+    "product_id": "202405071552-KOUN-NWUS54-LSROUN",
+    "unit": "Inch",
+    "qualifier": "E",
+    "ugc": "OKC109",
+    "product_id_summary": null,
+    "lon": -97.46,
+    "lat": 35.38
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.46,
+     35.38
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:42:00Z",
+    "type": "G",
+    "magnitude": 73.0,
+    "city": "2 SE Valley Brook",
+    "county": "Oklahoma",
+    "state": "OK",
+    "source": "Trained Spotter",
+    "remark": "Corrects previous tstm wnd gst report from 2 SE Valley Brook. Corrects previous tstm wnd gst report from 2 SE Valley Brook. Corrects previous tstm wnd gst report from 2 SE Valley Brook. Time estimated from radar. Report from 89th and Bryant.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND GST",
+    "product_id": "202405071552-KOUN-NWUS54-LSROUN",
+    "unit": "MPH",
+    "qualifier": "M",
+    "ugc": "OKC109",
+    "product_id_summary": null,
+    "lon": -97.46,
+    "lat": 35.38
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.46,
+     35.38
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:43:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "2 ESE Moore",
+    "county": "Cleveland",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Power poles down on Bryant between SE 19th and SE 4th Street. FB report. Time estimated on radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071706-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC027",
+    "product_id_summary": null,
+    "lon": -97.46,
+    "lat": 35.33
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.46,
+     35.33
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:44:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "4 ESE Moore",
+    "county": "Cleveland",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Downed tree. Facebook report with picture. Time based on radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071534-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC027",
+    "product_id_summary": null,
+    "lon": -97.42,
+    "lat": 35.32
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.42,
+     35.32
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:44:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "3 WNW Moore",
+    "county": "Cleveland",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Corrects previous tstm wnd dmg report from 3 WNW Moore. SW 119th between S. Western and S. Penn. Damaged power poles. Facebook report with picture. Time est. from radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071545-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC027",
+    "product_id_summary": null,
+    "lon": -97.54,
+    "lat": 35.35
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.54,
+     35.35
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:44:00Z",
+    "type": "T",
+    "magnitude": null,
+    "city": "1 NNE Valley Brook",
+    "county": "Oklahoma",
+    "state": "OK",
+    "source": "Emergency Mngr",
+    "remark": "Tornado moved from near SE 44th Street and Eastern to near SW 15th Street and the Tinker Diagonal.",
+    "wfo": "OUN",
+    "typetext": "TORNADO",
+    "product_id": "202405100346-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC109",
+    "product_id_summary": null,
+    "lon": -97.48,
+    "lat": 35.42
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.48,
+     35.42
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:45:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "2 ESE Moore",
+    "county": "Cleveland",
+    "state": "OK",
+    "source": "Trained Spotter",
+    "remark": "Powerline down. Spotter Network report. Radar estimated time.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405070543-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC027",
+    "product_id_summary": null,
+    "lon": -97.46,
+    "lat": 35.33
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.46,
+     35.33
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:46:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "5 ENE Norman",
+    "county": "Cleveland",
+    "state": "OK",
+    "source": "Public",
+    "remark": "South side of wood fence gone. North Rock Creek. Facebook with picture. Time estimated from radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071646-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC027",
+    "product_id_summary": null,
+    "lon": -97.36,
+    "lat": 35.25
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.36,
+     35.25
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:47:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "1 ENE Midwest City",
+    "county": "Oklahoma",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Downed Tree. Facebook report with picture. Time est. from radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071541-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC109",
+    "product_id_summary": null,
+    "lon": -97.37,
+    "lat": 35.46
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.37,
+     35.46
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:48:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "2 SSW Nicoma Park",
+    "county": "Oklahoma",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Snapped tree trunk. Midwest City near Reno. FB report. Time estimated from radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071652-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC109",
+    "product_id_summary": null,
+    "lon": -97.33,
+    "lat": 35.46
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.33,
+     35.46
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:50:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "Midwest City",
+    "county": "Oklahoma",
+    "state": "OK",
+    "source": "Emergency Mngr",
+    "remark": "Powerlines and tree limbs blown down. Radar estimated time.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405070552-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC109",
+    "product_id_summary": null,
+    "lon": -97.39,
+    "lat": 35.46
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.39,
+     35.46
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:51:00Z",
+    "type": "G",
+    "magnitude": 60.0,
+    "city": "4 ESE Moore",
+    "county": "Cleveland",
+    "state": "OK",
+    "source": "Amateur Radio",
+    "remark": "NWSChat Report.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND GST",
+    "product_id": "202405070454-KOUN-NWUS54-LSROUN",
+    "unit": "MPH",
+    "qualifier": "M",
+    "ugc": "OKC027",
+    "product_id_summary": null,
+    "lon": -97.42,
+    "lat": 35.32
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.42,
+     35.32
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:55:00Z",
+    "type": "G",
+    "magnitude": 66.0,
+    "city": "Tinker Air Force Base",
+    "county": "Oklahoma",
+    "state": "OK",
+    "source": "ASOS",
+    "remark": null,
+    "wfo": "OUN",
+    "typetext": "TSTM WND GST",
+    "product_id": "202405070511-KOUN-NWUS54-LSROUN",
+    "unit": "MPH",
+    "qualifier": "M",
+    "ugc": "OKC109",
+    "product_id_summary": null,
+    "lon": -97.38,
+    "lat": 35.42
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.38,
+     35.42
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:55:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "Moore",
+    "county": "Cleveland",
+    "state": "OK",
+    "source": "Public",
+    "remark": "3-inch tree limbs broken; Power poles broken.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405070521-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC027",
+    "product_id_summary": null,
+    "lon": -97.48,
+    "lat": 35.34
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.48,
+     35.34
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:56:00Z",
+    "type": "G",
+    "magnitude": 65.0,
+    "city": "8 SE Oklahoma City",
+    "county": "Oklahoma",
+    "state": "OK",
+    "source": "Trained Spotter",
+    "remark": null,
+    "wfo": "OUN",
+    "typetext": "TSTM WND GST",
+    "product_id": "202405070502-KOUN-NWUS54-LSROUN",
+    "unit": "MPH",
+    "qualifier": "M",
+    "ugc": "OKC109",
+    "product_id_summary": null,
+    "lon": -97.41,
+    "lat": 35.39
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.41,
+     35.39
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T04:56:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "3 SSW Dale",
+    "county": "Pottawatomie",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Down trees. Buck Rd. next to Twin Lakes. FB report. Time estimated from radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071753-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC125",
+    "product_id_summary": null,
+    "lon": -97.07,
+    "lat": 35.35
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -97.07,
+     35.35
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "valid": "2024-05-07T05:12:00Z",
+    "type": "D",
+    "magnitude": null,
+    "city": "1 N Shawnee",
+    "county": "Pottawatomie",
+    "state": "OK",
+    "source": "Public",
+    "remark": "Downed tree limbs. FB report. Time est. from radar.",
+    "wfo": "OUN",
+    "typetext": "TSTM WND DMG",
+    "product_id": "202405071631-KOUN-NWUS54-LSROUN",
+    "unit": null,
+    "qualifier": null,
+    "ugc": "OKC125",
+    "product_id_summary": null,
+    "lon": -96.93,
+    "lat": 35.35
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -96.93,
+     35.35
+    ]
+   }
+  }
+ ]
+}
