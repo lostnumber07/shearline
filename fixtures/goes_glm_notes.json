@@ -1,0 +1,83 @@
+{
+  "source_id": "goes-glm",
+  "verified_utc": "2026-06-13T19:04Z",
+  "product": "GLM-L2-LCFA  (Geostationary Lightning Mapper, Level-2, Lightning Cluster-Filter Algorithm)",
+  "s3": {
+    "access": "anonymous / unsigned (UNSIGNED signature, region us-east-1)",
+    "operational_buckets_verified_2026-06-13": {
+      "GOES-East": "noaa-goes19  (platform_ID=G19, orbital_slot='GOES-East') -- ACTIVELY WRITING TODAY",
+      "GOES-West": "noaa-goes18  (platform_ID=G18, orbital_slot='GOES-West') -- ACTIVELY WRITING TODAY",
+      "noaa-goes16": "EXISTS but NO GLM data under 2026/164 (DOY today) -- decommissioned/archive only, DO NOT use for live",
+      "noaa-goes17": "EXISTS but NO GLM data under 2026/164 (DOY today) -- archive only, DO NOT use for live"
+    },
+    "DEFAULT_LIVE_EAST_BUCKET": "noaa-goes19",
+    "DEFAULT_LIVE_WEST_BUCKET": "noaa-goes18",
+    "DO_NOT_HARDCODE_G16": "GOES-16 is no longer the operational East GLM source; East is G19 as of 2025+. Verify by listing GLM-L2-LCFA/{Y}/{DOY}/ for today before trusting.",
+    "prefix_template": "GLM-L2-LCFA/{YYYY}/{DDD}/{HH}/",
+    "DDD": "zero-padded day-of-year (001-366), e.g. 2026-06-13 = 164",
+    "HH": "zero-padded UTC hour 00-23",
+    "key_filename_template": "OR_GLM-L2-LCFA_G{sat}_s{YYYYDDDHHMMSSf}_e{YYYYDDDHHMMSSf}_c{YYYYDDDHHMMSSf}.nc",
+    "example_key": "GLM-L2-LCFA/2026/164/19/OR_GLM-L2-LCFA_G19_s20261641903400_e20261641904000_c20261641904023.nc",
+    "timestamp_fields": {
+      "s": "scan/coverage START time, format YYYYDDDHHMMSSf (year, day-of-year, hour, min, sec, f=tenths-of-second). s2026164 1903400 => 2026 DOY164 19:03:40.0",
+      "e": "coverage END time same format; END - START = ~20 s exactly per granule",
+      "c": "file CREATION time same format (~within seconds after e)"
+    },
+    "granule_cadence": "~20 s per granule => ~180 files/hour per satellite. New file LastModified lags wall-clock by ~20-40 s.",
+    "latest_granule_logic": "list_objects_v2 on prefix GLM-L2-LCFA/{Y}/{DDD}/{HH}/ ; keys sort lexicographically == chronological by the s-tag, so Contents[-1] is newest in that hour. For 'last N minutes' span hours if the window crosses an hour boundary (also fetch previous hour at top of hour). Parse the s-tag (chars after '_s') to get exact start time; filter granules whose [s,e] window overlaps the requested window."
+  },
+  "file_format": "netCDF4 / HDF5 (file magic = \\x89HDF). NOT netCDF3.",
+  "decode": {
+    "venv_status_2026-06-13": "PROJECT VENV CANNOT READ THIS FILE AS-IS. Installed backends were only scipy + cfgrib; scipy handles netCDF3 only and FAILS ('not a valid NetCDF 3 file'). netCDF4, h5netcdf, h5py all MISSING.",
+    "NEW_DEPENDENCY_REQUIRED": "Add BOTH 'h5netcdf' AND 'h5py' (h5netcdf does NOT pull h5py automatically -> ImportError 'No module named h5py'). Alternatively a single 'netCDF4' dep also works but is a heavier wheel.",
+    "verified_working_engine": "xarray.open_dataset(path, engine='h5netcdf') with h5py present -- CONFIRMED decodes the real granule.",
+    "cf_decoding": "Leave default decode_cf=True: xarray auto-unpacks int16 scale_factor/add_offset to physical units and converts all *_time / *_offset vars to datetime64[ns]."
+  },
+  "dims_observed_in_sample": {
+    "number_of_events": 16763,
+    "number_of_groups": 8309,
+    "number_of_flashes": 500,
+    "number_of_time_bounds": 2,
+    "number_of_wavelength_bounds": 2,
+    "number_of_field_of_view_bounds": 2
+  },
+  "point_radius_query_vars": {
+    "flash_lat": "coord, dim=(number_of_flashes,), float32, units=degrees_north (stored directly as float32, no scaling)",
+    "flash_lon": "coord, dim=(number_of_flashes,), float32, units=degrees_east (-180..180, negative=W; sample range -128..-34)",
+    "flash_time_offset_of_first_event": "coord, dim=(number_of_flashes,), decoded datetime64[ns]; RAW int16 'seconds since {time_coverage_start}'",
+    "flash_time_offset_of_last_event": "coord, dim=(number_of_flashes,), decoded datetime64[ns]",
+    "flash_energy": "data_var, dim=(number_of_flashes,), units=J; RAW int16 scale_factor=9.9999e-16 add_offset=2.8515e-16 _FillValue=-1",
+    "flash_area": "data_var, dim=(number_of_flashes,), units=m2",
+    "flash_id": "coord uint16; flash_quality_flag float32 (0 = good)",
+    "event_lat": "coord, dim=(number_of_events,), units=degrees_north; RAW int16 scale_factor=0.00203128 add_offset=-66.56 (xarray unpacks)",
+    "event_lon": "coord, dim=(number_of_events,), units=degrees_east; RAW int16 with scale_factor/add_offset",
+    "event_time_offset": "coord, dim=(number_of_events,), datetime64[ns]; RAW int16 'seconds since {time_coverage_start}'",
+    "event_energy": "data_var, units=J; RAW int16 scale_factor=1.9024e-17 _FillValue=-1",
+    "group_lat_lon": "group_lat/group_lon coords (number_of_groups,) units degrees_north/east; intermediate aggregation level"
+  },
+  "time_coverage": {
+    "time_coverage_start_attr": "2026-06-13T19:03:40.0Z",
+    "time_coverage_end_attr": "2026-06-13T19:04:00.0Z",
+    "duration": "20.0 seconds (single granule)",
+    "product_time": "scalar, J2000 epoch ('seconds since 2000-01-01 12:00:00'), = coverage start; decodes to 2026-06-13T19:03:40",
+    "GOTCHA_two_epochs": "product_time uses J2000 epoch; flash/event/group *_time_offset use PER-FILE epoch 'seconds since {time_coverage_start}'. Do not assume one epoch. xarray decode_cf handles each var's own units string."
+  },
+  "global_attrs": {
+    "platform_ID": "G19",
+    "orbital_slot": "GOES-East",
+    "instrument_ID": "FM4",
+    "spatial_resolution": "8km at nadir",
+    "production_site": "RBU",
+    "title": "GLM L2 Lightning Detections: Events, Groups, and Flashes"
+  },
+  "sentinels_and_gotchas": [
+    "_FillValue=-1 on flash_energy/event_energy/group_energy (raw int16). Mask with _FillValue, not the displayed valid_range.",
+    "valid_range on energy shows as [0,-6] due to uint16 stored-as-signed display artifact (-6 == 65530 unsigned); do NOT use it for masking.",
+    "lon is degrees_east in -180..180 with negatives for Western Hemisphere (NOT 0..360). GOES-East flashes are ~-130..-30.",
+    "GLM only reports lightning OPTICALLY visible to the geostationary sensor; full-disk Americas coverage. Off-Earth/space-look pixels excluded.",
+    "number_of_flashes can be small or even 0 in quiet granules (500 here, hard cap-ish); events >> flashes (16763 here). Handle empty-dim granules.",
+    "Files are ~180-630 KB (G19 sample 632615 B; G18 sample 180028 B). Cheap to fetch many.",
+    "Quality flags (flash_quality_flag/group_quality_flag) float32; 0 == good_quality_qf per GLM spec -- filter if strict.",
+    "S3 keys sort == chronological by s-tag, so Contents[-1] of an hour prefix is newest; but a 'last 5 min' query near top-of-hour must also list the previous HH prefix."
+  ]
+}

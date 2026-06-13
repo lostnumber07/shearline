@@ -1,0 +1,22 @@
+{
+"type":"FeatureCollection", 
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features":[ 
+{ "type": "Feature", 
+"properties": {"PROB":"100","WSR_ID":"KVNX","CELL_ID":"G2","ZTIME":"2011-05-24T22:42:54Z","SEVPROB":"80","MAXSIZE":"1.75"},"geometry": { "type": "Point", "coordinates": [-97.5248,35.3034]
+}
+}
+,{ "type": "Feature", 
+"properties": {"PROB":"100","WSR_ID":"KFDR","CELL_ID":"U1","ZTIME":"2011-05-24T22:46:51Z","SEVPROB":"60","MAXSIZE":"1.25"},"geometry": { "type": "Point", "coordinates": [-97.5047,35.3302]
+}
+}
+,{ "type": "Feature", 
+"properties": {"PROB":"100","WSR_ID":"KVNX","CELL_ID":"G2","ZTIME":"2011-05-24T22:47:35Z","SEVPROB":"50","MAXSIZE":"1.25"},"geometry": { "type": "Point", "coordinates": [-97.5079,35.3435]
+}
+}
+,{ "type": "Feature", 
+"properties": {"PROB":"100","WSR_ID":"KINX","CELL_ID":"Z7","ZTIME":"2011-05-24T23:09:27Z","SEVPROB":"90","MAXSIZE":"3.25"},"geometry": { "type": "Point", "coordinates": [-97.5246,35.3405]
+}
+}
+]
+}

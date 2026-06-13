@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<swdiXmlResponse>
+<dataset>
+   <dataset-url-path>nx3structure</dataset-url-path>
+   <begDate>19920507</begDate>   <endDate>20260611</endDate>   <tilesum>Y</tilesum>   <idQuery>N</idQuery>   <description><![CDATA[ 
+Filtered Storm Cells (Max Reflectivity >= 45 dBZ) from NEXRAD (Level-III Storm Structure Product)
+   ]]></description>
+</dataset>
+<dataset>
+   <dataset-url-path>nx3structure_all</dataset-url-path>
+   <begDate>19920507</begDate>   <endDate>20260611</endDate>   <tilesum>Y</tilesum>   <idQuery>N</idQuery>   <description><![CDATA[ 
+All Storm Cells from NEXRAD (Level-III Storm Structure Product)
+   ]]></description>
+</dataset>
+<dataset>
+   <dataset-url-path>nx3hail</dataset-url-path>
+   <begDate>19920507</begDate>   <endDate>20260611</endDate>   <tilesum>Y</tilesum>   <idQuery>N</idQuery>   <description><![CDATA[ 
+Filtered Hail Signatures (Max Size > 0 and Probability = 100%) from NEXRAD (Level-III Hail Product)
+   ]]></description>
+</dataset>
+<dataset>
+   <dataset-url-path>nx3hail_all</dataset-url-path>
+   <begDate>19920507</begDate>   <endDate>20260611</endDate>   <tilesum>Y</tilesum>   <idQuery>N</idQuery>   <description><![CDATA[ 
+All Hail Signatures from NEXRAD (Level-III Hail Product)
+   ]]></description>
+</dataset>
+<dataset>
+   <dataset-url-path>nx3meso</dataset-url-path>
+   <begDate>19920507</begDate>   <endDate>20260611</endDate>   <tilesum>Y</tilesum>   <idQuery>N</idQuery>   <description><![CDATA[ 
+Mesocyclone Signatures from NEXRAD (Level-III Meso Product)
+   ]]></description>
+</dataset>
+<dataset>
+   <dataset-url-path>nx3mda</dataset-url-path>
+   <begDate>19920507</begDate>   <endDate>20260611</endDate>   <tilesum>Y</tilesum>   <idQuery>N</idQuery>   <description><![CDATA[ 
+Digital Mesocyclone Detection Algorithm from NEXRAD (Level-III MDA Product)
+   ]]></description>
+</dataset>
+<dataset>
+   <dataset-url-path>nx3tvs</dataset-url-path>
+   <begDate>19920507</begDate>   <endDate>20260611</endDate>   <tilesum>Y</tilesum>   <idQuery>N</idQuery>   <description><![CDATA[ 
+Tornado Signatures from NEXRAD (Level-III TVS Product)
+   ]]></description>
+</dataset>
+<dataset>
+   <dataset-url-path>nldn</dataset-url-path>
+   <begDate>19860101</begDate>   <endDate>20260611</endDate>   <tilesum>Y</tilesum>   <idQuery>N</idQuery>   <description><![CDATA[ 
+Lightning Strikes from Vaisala NLDN
+   ]]></description>
+</dataset>
+</swdiXmlResponse>

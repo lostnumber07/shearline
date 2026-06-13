@@ -265,6 +265,15 @@ These are non-negotiable and test-enforced where possible:
   also confirms the `eccodeslib` GRIB binary decodes on Linux, not just macOS.
 - **`scripts/smoke.py`** is a live end-to-end check over both transports
   (acceptance gates: cold start < 10 s, cached call < 500 ms).
+- **`scripts/canary.py`** is a *live* upstream drift detector (the offline suite
+  can't see NOAA changing a field or moving a bucket). It hits every source once
+  for a fixed quiet CONUS point and asserts the **shape** of a healthy response
+  — envelope keys, expected `data` fields, correct types — never specific values
+  or "weather present." It distinguishes transient outage (one retry) from
+  schema drift (fail hard with a diff). A moved bucket / renamed file surfaces as
+  persistent degradation and also fails the run. `.github/workflows/canary.yml`
+  runs it on a daily cron (+ manual dispatch) and opens a tracking issue on
+  failure. The expected-schema spec lives inline at the top of the script.
 
 ---
 
