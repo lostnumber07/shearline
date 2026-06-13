@@ -108,6 +108,18 @@ SPEC: dict[str, dict[str, Any]] = {
             "data.hours": NUM,
         },
     },
+    "get_lightning": {
+        # short window keeps the canary light (a 15-min window lists ~45 granules);
+        # this still exercises the bucket listing + key parsing + a granule decode,
+        # so a satellite/bucket transition surfaces as persistent degradation.
+        "args": {"lat": OKC_LAT, "lon": OKC_LON, "minutes": 2},
+        "fields": {
+            "data.flash_count": int,
+            "data.satellite": str,
+            "data.granules_used": int,
+            "data.window_minutes": NUM,
+        },
+    },
     "get_radar_snapshot": {
         "args": {"lat": OKC_LAT, "lon": OKC_LON},
         "fields": {
