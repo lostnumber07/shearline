@@ -1,14 +1,21 @@
 """NOMADS RAP grib-filter fetch + decode to a single-point profile.
 
-Empirically verified 2026-06-10:
+Empirically verified 2026-06-10 and 2026-06-13:
 - Latest f00 analysis appears ~48 min after the cycle hour; walk back up to
   4 hours (rolling into the previous day's directory near 00Z).
+- Forecast hours fXX use the SAME filename/params/decode as f00 (only the
+  f00->fXX token changes); all our state variables are instantaneous in fXX.
+  Forecast range is cycle-dependent (f21 on 00/06/12/18Z, f51 on 03/09/15/21Z),
+  so the trend series stays within f06, available on every cycle. fXX post over
+  ~10 min and not strictly in order, so a fresh cycle may have f00 but not yet
+  f06 — the series anchors to the latest cycle for which all hours are present.
 - Moisture aloft is RH only — no dewpoint/specific humidity on pressure
   levels; dewpoint aloft must be derived (MetPy) from T + RH.
 - cfgrib silently drops conflicting hypercubes: heightAboveGround must be
   opened separately for level=2 and level=10; ustm/vstm must each be opened
   by shortName or the hlcy group swallows them.
 - Decoded longitudes are 0-360 east; the Lambert grid has 2-D lat/lon coords.
+- Read valid_time off the decoded dataset rather than computing cycle + fhr.
 """
 
 import asyncio
@@ -38,12 +45,17 @@ EXTRA_LEVELS = [
 ]
 BOX_HALF_DEG = 0.6  # ~1.2-degree box around the point (brief: ~1 degree)
 MAX_CYCLE_LOOKBACK_H = 4
+# Forecast hours for the trend tool. All <= f21, so they exist on every cycle.
+FORECAST_HOURS = [0, 1, 3, 6]
+MAX_FORECAST_HOUR = 21  # the floor across all RAP cycles; guards the series
 
 
-def _filter_params(date_str: str, hour: int, lat: float, lon: float) -> dict[str, str]:
+def _filter_params(
+    date_str: str, hour: int, lat: float, lon: float, fhr: int = 0
+) -> dict[str, str]:
     params: dict[str, str] = {
         "dir": f"/rap.{date_str}",
-        "file": f"rap.t{hour:02d}z.awp130pgrbf00.grib2",
+        "file": f"rap.t{hour:02d}z.awp130pgrbf{fhr:02d}.grib2",
         "subregion": "",
         "leftlon": f"{lon - BOX_HALF_DEG:.2f}",
         "rightlon": f"{lon + BOX_HALF_DEG:.2f}",
@@ -190,3 +202,61 @@ async def fetch_profile(lat: float, lon: float) -> dict[str, Any]:
     profile = await asyncio.to_thread(_decode_profile_sync, grib, lat, lon)
     profile["requested_cycle"] = cycle
     return profile
+
+
+async def _fetch_subset_at(
+    lat: float, lon: float, date_str: str, hour: int, fhr: int
+) -> bytes:
+    """Fetch one (cycle, forecast-hour) subset; raise if that file isn't posted."""
+    key = f"rap:{lat:.2f},{lon:.2f}:{date_str}{hour:02d}f{fhr:02d}"
+
+    async def fetch() -> bytes:
+        resp = await client().get(
+            FILTER_URL,
+            params=_filter_params(date_str, hour, lat, lon, fhr),
+            timeout=httpx.Timeout(60.0, connect=10.0),
+        )
+        if resp.status_code == 200 and resp.content[:4] == b"GRIB":
+            return resp.content
+        raise RuntimeError(
+            f"RAP f{fhr:02d} for cycle {date_str} t{hour:02d}z unavailable (HTTP {resp.status_code})"
+        )
+
+    return await CACHE.get_or_fetch(key, TTL_RAP, fetch)
+
+
+async def fetch_forecast_profiles(
+    lat: float, lon: float, fhrs: list[int] | None = None
+) -> tuple[str, list[dict[str, Any]]]:
+    """Decode a forecast series anchored to a SINGLE consistent RAP cycle.
+
+    Walks back to the latest cycle for which ALL requested forecast hours are
+    posted (fXX appear over ~10 min and out of order on a fresh cycle), so the
+    trend is internally consistent. Returns (cycle_iso, [profile, ...]).
+    """
+    fhrs = fhrs or FORECAST_HOURS
+    if any(f > MAX_FORECAST_HOUR for f in fhrs):
+        raise ValueError(f"forecast hours must be <= f{MAX_FORECAST_HOUR:02d}")
+
+    now = datetime.now(UTC)
+    last_error: Exception | None = None
+    for back in range(MAX_CYCLE_LOOKBACK_H + 1):
+        cycle = now - timedelta(hours=back)
+        date_str, hour = cycle.strftime("%Y%m%d"), cycle.hour
+        try:
+            gribs = await asyncio.gather(
+                *(_fetch_subset_at(lat, lon, date_str, hour, f) for f in fhrs)
+            )
+        except Exception as exc:  # any missing fhr => cycle incomplete, walk back
+            last_error = exc
+            continue
+        profiles = []
+        for fhr, grib in zip(fhrs, gribs, strict=True):
+            profile = await asyncio.to_thread(_decode_profile_sync, grib, lat, lon)
+            profile["forecast_hour"] = fhr
+            profiles.append(profile)
+        return cycle.strftime("%Y-%m-%dT%H:00Z"), profiles
+
+    raise RuntimeError(
+        f"No complete RAP forecast cycle within {MAX_CYCLE_LOOKBACK_H} h: {last_error}"
+    )

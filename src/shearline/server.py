@@ -15,6 +15,7 @@ from mcp.server.fastmcp import FastMCP
 from . import __version__
 from .bounds import check_conus
 from .derive import threat as threat_derive
+from .derive import trend as trend_derive
 from .derive.environment import compute_environment, interpret_environment
 from .envelope import envelope
 from .sources import iem, mrms, nexrad, nws, rap, spc
@@ -302,6 +303,30 @@ async def _environment_payload(lat: float, lon: float) -> dict[str, Any]:
         )
 
 
+async def _environment_trend_payload(lat: float, lon: float) -> dict[str, Any]:
+    try:
+        cycle_iso, profiles = await rap.fetch_forecast_profiles(lat, lon)
+    except Exception as exc:
+        return envelope(
+            {"point": {"lat": lat, "lon": lon}},
+            f"The RAP forecast-environment trend could not be computed: {exc}. "
+            "Other tools are unaffected.",
+            degraded=["rap-trend"],
+        )
+    series = []
+    for profile in profiles:
+        env = await asyncio.to_thread(compute_environment, profile)
+        series.append(trend_derive.summarize(env, profile["forecast_hour"]))
+    data = {
+        "point": {"lat": lat, "lon": lon},
+        "model": "RAP 13-km forecast",
+        "cycle_utc": cycle_iso,
+        "forecast_hours": [s["forecast_hour"] for s in series],
+        "series": series,
+    }
+    return envelope(data, trend_derive.interpret_trend(series))
+
+
 async def _mrms_payload(lat: float, lon: float, radius_km: float) -> dict[str, Any]:
     degraded: list[str] = []
     samples: dict[str, dict | None] = {}
@@ -416,6 +441,21 @@ async def get_point_environment(lat: float, lon: float) -> dict[str, Any]:
     """
     check_conus(lat, lon)
     return await _environment_payload(lat, lon)
+
+
+@mcp.tool()
+async def get_environment_trend(lat: float, lon: float) -> dict[str, Any]:
+    """RAP forecast-environment trend at a CONUS point (the anticipatory view).
+
+    Where get_point_environment is "now" (the f00 analysis), this returns a short
+    forecast series (f00/f01/f03/f06) of the discriminating quantities — MLCAPE,
+    0-6 km bulk shear, 0-1 km SRH, supercell composite, significant-tornado
+    parameter — all from one consistent RAP cycle, with an interpretation of the
+    TRAJECTORY (intensifying / stabilizing / steady). Downloads and decodes four
+    forecast hours, so the first call can take ~15-20 seconds.
+    """
+    check_conus(lat, lon)
+    return await _environment_trend_payload(lat, lon)
 
 
 @mcp.tool()

@@ -48,6 +48,7 @@ async def test_mcp_registers_expected_tools():
         "get_active_warnings",
         "get_spc_outlook",
         "get_point_environment",
+        "get_environment_trend",
         "get_mrms_severe",
         "get_storm_reports",
         "get_historical_storm_reports",
