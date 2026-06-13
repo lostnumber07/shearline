@@ -2,19 +2,19 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.lostnumber07/shearline",
   "title": "SHEARLINE",
-  "description": "Analyst-grade US severe weather: warnings with IBW tags, SPC outlooks, RAP environments, MRMS, LSRs",
+  "description": "Analyst-grade US severe weather: warnings, SPC outlooks, RAP environment, MRMS, GLM lightning",
   "repository": {
     "url": "https://github.com/lostnumber07/shearline",
     "source": "github"
   },
   "websiteUrl": "https://github.com/lostnumber07/shearline",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "packages": [
     {
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "shearline",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"
