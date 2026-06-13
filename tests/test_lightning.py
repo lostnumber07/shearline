@@ -130,7 +130,7 @@ def fake_s3(monkeypatch):
 
 async def test_tool_returns_envelope_with_flashes(fake_s3):
     out = await server.get_lightning(FLASH_LAT, FLASH_LON, radius_km=40, minutes=15)
-    assert set(out) == {"data", "interpretation", "degraded", "disclaimer"}
+    assert set(out) == {"schema_version", "data", "interpretation", "degraded", "disclaimer"}
     assert out["disclaimer"] == DISCLAIMER
     assert out["degraded"] == []
     assert out["data"]["flash_count"] > 0

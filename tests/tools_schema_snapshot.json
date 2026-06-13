@@ -1,0 +1,300 @@
+{
+  "_schema_version": "1.0",
+  "tools": {
+    "get_active_warnings": {
+      "inputSchema": {
+        "properties": {
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "radius_km": {
+            "default": 40,
+            "title": "Radius Km",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "get_active_warningsArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_active_warningsDictOutput",
+        "type": "object"
+      }
+    },
+    "get_environment_trend": {
+      "inputSchema": {
+        "properties": {
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "get_environment_trendArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_environment_trendDictOutput",
+        "type": "object"
+      }
+    },
+    "get_historical_storm_reports": {
+      "inputSchema": {
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "radius_km": {
+            "default": 80,
+            "title": "Radius Km",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon",
+          "date"
+        ],
+        "title": "get_historical_storm_reportsArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_historical_storm_reportsDictOutput",
+        "type": "object"
+      }
+    },
+    "get_lightning": {
+      "inputSchema": {
+        "properties": {
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "minutes": {
+            "default": 15,
+            "title": "Minutes",
+            "type": "number"
+          },
+          "radius_km": {
+            "default": 40,
+            "title": "Radius Km",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "get_lightningArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_lightningDictOutput",
+        "type": "object"
+      }
+    },
+    "get_mrms_severe": {
+      "inputSchema": {
+        "properties": {
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "radius_km": {
+            "default": 40,
+            "title": "Radius Km",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "get_mrms_severeArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_mrms_severeDictOutput",
+        "type": "object"
+      }
+    },
+    "get_point_environment": {
+      "inputSchema": {
+        "properties": {
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "get_point_environmentArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_point_environmentDictOutput",
+        "type": "object"
+      }
+    },
+    "get_radar_snapshot": {
+      "inputSchema": {
+        "properties": {
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "get_radar_snapshotArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_radar_snapshotDictOutput",
+        "type": "object"
+      }
+    },
+    "get_spc_outlook": {
+      "inputSchema": {
+        "properties": {
+          "day": {
+            "default": 1,
+            "title": "Day",
+            "type": "integer"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "get_spc_outlookArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_spc_outlookDictOutput",
+        "type": "object"
+      }
+    },
+    "get_storm_reports": {
+      "inputSchema": {
+        "properties": {
+          "hours": {
+            "default": 6,
+            "title": "Hours",
+            "type": "number"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "radius_km": {
+            "default": 80,
+            "title": "Radius Km",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "get_storm_reportsArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_storm_reportsDictOutput",
+        "type": "object"
+      }
+    },
+    "get_threat_brief": {
+      "inputSchema": {
+        "properties": {
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "get_threat_briefArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "title": "get_threat_briefDictOutput",
+        "type": "object"
+      }
+    }
+  }
+}

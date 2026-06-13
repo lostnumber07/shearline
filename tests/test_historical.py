@@ -130,7 +130,7 @@ def test_interpret_historical_pre_2008_adds_sparse_caveat():
 async def test_tool_returns_envelope_and_counts():
     mock_api()
     out = await server.get_historical_storm_reports(OKC_LAT, OKC_LON, date=DATE, radius_km=80)
-    assert set(out) == {"data", "interpretation", "degraded", "disclaimer"}
+    assert set(out) == {"schema_version", "data", "interpretation", "degraded", "disclaimer"}
     assert out["disclaimer"] == DISCLAIMER
     assert out["degraded"] == []
     assert out["data"]["date"] == DATE

@@ -30,7 +30,7 @@ ALL_TOOLS = [
     server.get_radar_snapshot,
 ]
 
-ENVELOPE_KEYS = {"data", "interpretation", "degraded", "disclaimer"}
+ENVELOPE_KEYS = {"schema_version", "data", "interpretation", "degraded", "disclaimer"}
 
 
 @pytest.fixture(autouse=True)
