@@ -90,6 +90,20 @@ uvx shearline --http --port 8741
 # serves at http://127.0.0.1:8741/mcp
 ```
 
+The HTTP transport is built to be hosted: it emits one structured JSON log line
+per tool call (tool, coarse 1° lat/lon bucket, latency, `degraded` list, cache
+hit/miss) and applies a per-client token-bucket rate limit, returning `429` with
+`Retry-After` when exceeded. Both are HTTP-only — **stdio behaviour is
+unchanged**. Configure via environment variables:
+
+| Env var | Default | Effect |
+| --- | --- | --- |
+| `SHEARLINE_RATE_RPM` | `60` | sustained requests/minute/client (`0` disables the limit) |
+| `SHEARLINE_RATE_BURST` | `30` | token-bucket capacity (max burst) |
+| `SHEARLINE_HTTP_LOG` | `1` | set `0` to silence per-request logging |
+| `SHEARLINE_LOG_LEVEL` | `INFO` | log level for the `shearline.http` logger |
+| `SHEARLINE_UPSTREAM_CONCURRENCY` | `8` | max concurrent upstream fetches (politeness toward NOAA) |
+
 To run the latest unreleased `main` instead of the PyPI release, swap `shearline` for `--from git+https://github.com/lostnumber07/shearline shearline`.
 
 ## Why these tools
