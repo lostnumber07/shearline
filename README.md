@@ -114,6 +114,16 @@ A forecast API tells you it might rain. None of the questions that matter on a s
 
 Coverage is **continental US only** — out-of-bounds coordinates are rejected with a clear error. Upstream fetches are cached (warnings 60 s, MRMS 120 s, LSRs 300 s, outlooks/RAP 30 min) and degrade gracefully: if one source is down, you get partial data plus a `degraded` field, never a bare exception.
 
+## Recipes for non-meteorologists
+
+You don't need to know what an STP is to use SHEARLINE. The [`.claude/skills/`](.claude/skills)
+directory ships three end-to-end recipes that name the exact tool sequence for a
+domain task — drop them into any agent that has SHEARLINE connected:
+
+- **[hail-claim-verification](.claude/skills/hail-claim-verification/SKILL.md)** — did damaging hail occur at this address on this date? (insurance / forensic)
+- **[chase-day-briefing](.claude/skills/chase-day-briefing/SKILL.md)** — outlook → environment → trend → warnings → radar, into a go/no-go with a target window (chase / EM)
+- **[event-day-lightning-watch](.claude/skills/event-day-lightning-watch/SKILL.md)** — poll lightning proximity and issue suspend/shelter/resume calls by the 30-30 / 10-mile rules (venues / outdoor ops)
+
 ## Architecture
 
 SHEARLINE is a thin, layered async server: per-source fetch/parse modules feed a meteorology derivation layer, which feeds a uniform tool layer. Every tool returns the same `{data, interpretation, degraded, disclaimer}` envelope, every upstream call is TTL-cached, and one failing source degrades to partial data instead of an exception. See **[ARCHITECTURE.md](ARCHITECTURE.md)** for the module map, the request lifecycle of `get_threat_brief`, the concurrency model, and the upstream quirks each source module encodes.
