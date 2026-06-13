@@ -1,6 +1,6 @@
 [project]
 name = "shearline"
-version = "1.0.0"
+version = "1.1.0"
 description = "Analyst-grade US severe-weather tools for AI agents over MCP: warning polygons with IBW tags, SPC outlooks, RAP point environments, MRMS hail/rotation, storm reports, and a composite threat brief."
 readme = "README.md"
 license = "MIT"

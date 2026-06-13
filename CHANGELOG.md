@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.1.0 — 2026-06-13
+
+Backward-compatible feature release — existing tools and fields are unchanged.
+
+- **New tools:**
+  - `get_historical_storm_reports(lat, lon, date, radius_km=80)` — what hail/wind/
+    tornado hit a point on a specific past date (IEM LSRs, ~2005 onward).
+  - `get_environment_trend(lat, lon)` — RAP forecast-hour series (f00/f01/f03/f06)
+    of MLCAPE/shear/SRH/SCP/STP with a trajectory interpretation.
+  - `get_lightning(lat, lon, radius_km=40, minutes=15)` — GOES-East GLM total
+    lightning with a tiered outdoor-safety interpretation; also folded into
+    `get_threat_brief`.
+- **Envelope:** added `schema_version` ("1.0"); the tool I/O contract is now under
+  a documented semver stability policy, guarded by a schema-lock test.
+- **Hosting:** the `--http` transport now emits structured per-request JSON logs
+  and applies a per-client token-bucket rate limit (both HTTP-only; stdio
+  unchanged), plus an upstream-concurrency cap. Configurable via
+  `SHEARLINE_RATE_RPM`/`_BURST`, `SHEARLINE_HTTP_LOG`, `SHEARLINE_LOG_LEVEL`,
+  `SHEARLINE_UPSTREAM_CONCURRENCY`.
+- **Reliability:** a daily live "canary" workflow (`scripts/canary.py`) checks
+  every upstream's response shape and fails on schema drift (renamed fields,
+  moved buckets) before it reaches users.
+- **Recipes:** three `.claude/skills/` domain recipes (hail-claim verification,
+  chase-day briefing, event-day lightning watch).
+- New dependencies: `h5netcdf`, `h5py` (GOES GLM netCDF decode). Upstreams added:
+  GOES GLM on AWS Open Data (operational GOES-East = `noaa-goes19`).
+
 ## v1.0.0 — 2026-06-10
 
 Initial release.
