@@ -51,12 +51,14 @@ def build_threat_brief(
     environment_env: dict | None,
     mrms_env: dict | None,
     reports_env: dict | None,
+    lightning_env: dict | None = None,
 ) -> tuple[dict[str, Any], str]:
     w = _data(warnings_env)
     o = _data(outlook_env)
     e = _data(environment_env)
     m = _data(mrms_env)
     r = _data(reports_env)
+    li = _data(lightning_env)
 
     rules: list[tuple[str, str]] = []  # (level, reason)
     scores = {"tornado": 0.0, "hail": 0.0, "damaging_wind": 0.0, "flash_flood": 0.0}
@@ -71,7 +73,9 @@ def build_threat_brief(
     vil = (m.get("vil") or {}).get("max_vil_kg_m2") or 0
     counts = r.get("counts") or {}
     report_total = sum(v or 0 for v in counts.values())
-    storms_active = bool(warnings) or refl >= 50 or report_total > 0
+    flash_count = li.get("flash_count") or 0
+    nearest_strike_km = (li.get("nearest_strike") or {}).get("distance_km")
+    storms_active = bool(warnings) or refl >= 50 or report_total > 0 or flash_count > 0
 
     # ---- Warnings ----
     for warn in warnings:
@@ -288,6 +292,26 @@ def build_threat_brief(
             ("elevated", "Multiple recent severe hail/wind reports in the area — storms are producing.")
         )
 
+    # ---- Lightning (outdoor-safety hazard) ----
+    if flash_count > 0 and nearest_strike_km is not None:
+        if nearest_strike_km <= 16:
+            rules.append(
+                (
+                    "elevated",
+                    f"Lightning within {nearest_strike_km} km of the point ({flash_count} flash(es) "
+                    "in the last 15 min) — an immediate outdoor-safety hazard regardless of "
+                    "severe-storm potential.",
+                )
+            )
+        else:
+            rules.append(
+                (
+                    "marginal",
+                    f"Lightning in the area ({nearest_strike_km} km from the point) but not yet "
+                    "within strike range.",
+                )
+            )
+
     # ---- Final level ----
     if rules:
         level = LEVELS[max(LEVELS.index(lvl) for lvl, _ in rules)]
@@ -388,11 +412,18 @@ def build_threat_brief(
         "scp": comp.get("scp"),
     } if e else None
 
+    lightning_summary = {
+        "flash_count": flash_count,
+        "flashes_per_min": li.get("flashes_per_min"),
+        "nearest_strike_km": nearest_strike_km,
+    } if li else None
+
     data = {
         "point": {"lat": lat, "lon": lon},
         "threat_level": level,
         "threat_logic": logic,
         "hazards_ranked": hazards_ranked,
+        "lightning_summary": lightning_summary,
         "warnings_summary": {
             "active_at_point": sum(1 for x in warnings if x.get("point_inside")),
             "active_within_radius": len(warnings),
@@ -410,7 +441,9 @@ def build_threat_brief(
         "attention_window": attention,
     }
 
-    interp = _interpret(level, logic, hazards_ranked, env_summary, nearest_signature, attention)
+    interp = _interpret(
+        level, logic, hazards_ranked, env_summary, nearest_signature, attention, lightning_summary
+    )
     return data, interp
 
 
@@ -421,6 +454,7 @@ def _interpret(
     env: dict | None,
     signature: dict | None,
     attention: dict,
+    lightning: dict | None = None,
 ) -> str:
     s = [f"Overall threat level: {level.upper()}. {logic[0]}"]
     active_hazards = [h for h in hazards if h["level"] != "none"]
@@ -429,6 +463,12 @@ def _interpret(
         s.append(f"Hazards in order of concern: {ranked}.")
     else:
         s.append("No individual hazard rises above background levels.")
+    if lightning and (lightning.get("flash_count") or 0) > 0:
+        near = lightning.get("nearest_strike_km")
+        s.append(
+            f"Lightning: {lightning['flash_count']} flash(es) nearby"
+            + (f", nearest {near} km from the point." if near is not None else ".")
+        )
     if env and env.get("mlcape_jkg") is not None:
         s.append(
             f"Environment snapshot: MLCAPE {env['mlcape_jkg']} J/kg, 0-6 km shear "

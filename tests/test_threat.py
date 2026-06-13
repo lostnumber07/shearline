@@ -26,8 +26,36 @@ def _env(**data):
     return {"data": data}
 
 
-def brief(warnings=None, outlook=None, environment=None, mrms=None, reports=None):
-    return build_threat_brief(LAT, LON, warnings, outlook, environment, mrms, reports)
+def brief(warnings=None, outlook=None, environment=None, mrms=None, reports=None, lightning=None):
+    return build_threat_brief(LAT, LON, warnings, outlook, environment, mrms, reports, lightning)
+
+
+def lightning_env(flash_count, nearest_km):
+    return _env(
+        flash_count=flash_count,
+        flashes_per_min=round(flash_count / 15, 1),
+        nearest_strike={"distance_km": nearest_km} if nearest_km is not None else None,
+    )
+
+
+def test_lightning_within_strike_distance_elevates_and_summarizes():
+    data, interp = brief(lightning=lightning_env(8, 12.0))
+    assert data["threat_level"] == "elevated"
+    assert any("outdoor-safety hazard" in r for r in data["threat_logic"])
+    assert data["lightning_summary"]["flash_count"] == 8
+    assert data["lightning_summary"]["nearest_strike_km"] == 12.0
+    assert "Lightning:" in interp
+
+
+def test_distant_lightning_is_marginal_note():
+    data, _ = brief(lightning=lightning_env(2, 35.0))
+    assert data["threat_level"] == "marginal"
+    assert any("not yet" in r for r in data["threat_logic"])
+
+
+def test_no_lightning_env_leaves_summary_none():
+    data, _ = brief()
+    assert data["lightning_summary"] is None
 
 
 def tor_warning(inside=True, ibw=None, expires=None, dist=None, direction=None):

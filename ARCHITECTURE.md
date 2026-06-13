@@ -34,7 +34,7 @@ For *what* the tools do and *why* these tools, see the [README](README.md). For
 ```
                          ┌──────────────────────────────────────────────┐
    MCP client (agent) ───▶              server.py  (tool layer)          │
-   stdio / HTTP         │  9 @mcp.tool() coroutines · CONUS bounds check  │
+   stdio / HTTP         │ 10 @mcp.tool() coroutines · CONUS bounds check  │
                          │  envelope assembly · degraded aggregation       │
                          └───────┬───────────────────────────┬───────────┘
                                  │                            │
@@ -74,7 +74,7 @@ The dependency rule is strictly downward: `server` → `derive` → `sources` �
 | --- | ---: | --- |
 | `server.py` | ~540 | The MCP tools, the CONUS gate on every entry, the per-tool **payload builders** (which call sources + derive and assemble the envelope), and the `get_threat_brief` fan-out. The only file that imports `FastMCP`. |
 | `derive/environment.py` | ~328 | RAP profile → severe-weather parameters via **MetPy** (CAPE/CIN family, LCL, shear, SRH, Bunkers motion, effective inflow layer, SCP, fixed- and effective-layer STP), plus the analyst-voice interpretation that names the parameter-space regime. |
-| `derive/threat.py` | ~444 | Pure synthesis: combines the five source payloads into a rule-based threat level with quoted logic, ranked hazards, nearest storm signature, and attention window. No I/O — trivially testable. |
+| `derive/threat.py` | ~480 | Pure synthesis: combines the six source payloads (warnings, outlook, environment, MRMS, reports, lightning) into a rule-based threat level with quoted logic, ranked hazards, nearest storm signature, lightning summary, and attention window. No I/O — trivially testable. |
 | `derive/trend.py` | ~110 | Pure: reduces a series of forecast-hour environments to the discriminating quantities and describes their trajectory (intensifying / stabilizing / steady). No I/O. |
 | `sources/nws.py` | ~174 | api.weather.gov alerts: warning polygons, IBW tag parsing, storm-motion decode, point-in-polygon, severe-event whitelist. |
 | `sources/spc.py` | ~158 | SPC outlook GeoJSON layers: categorical + probability point lookup, the `cig*` significant-severe migration, stale-relic guarding. |
@@ -82,6 +82,7 @@ The dependency rule is strictly downward: `server` → `derive` → `sources` �
 | `sources/mrms.py` | ~312 | MRMS products from S3: latest-file discovery, gzip+grib decode, radius sampling with the product-specific units and sentinels. |
 | `sources/iem.py` | ~166 | IEM Local Storm Reports: point+radius query, type/magnitude/unit normalization, counts. |
 | `sources/nexrad.py` | ~289 | NEXRAD Level 2 metadata: nearest-site lookup from a bundled station table, latest-volume fetch, MetPy volume parse (VCP, max dBZ, echo top). |
+| `sources/lightning.py` | ~230 | GOES GLM lightning from S3: window granule discovery (s-tag start time), per-granule flash sampling within radius (netCDF via h5netcdf), tiered outdoor-safety output. |
 | `fetch.py` | ~61 | One shared `httpx.AsyncClient`, polite User-Agent, cached JSON/bytes GETs with a single transient retry. |
 | `cache.py` | ~71 | Async-safe TTL cache with per-key locks (no thundering herd) and eviction-on-access. |
 | `bounds.py` | ~24 | CONUS bounding box; raises `OutOfBoundsError` with an actionable message. |
@@ -133,12 +134,13 @@ Every tool returns this shape (assembled by `envelope.py`):
 ```
 get_threat_brief(lat, lon)
    check_conus
-   asyncio.gather(            ← all five run concurrently
+   asyncio.gather(            ← all six run concurrently
        _warnings_payload(40km),
        _outlook_payload(day 1),
        _environment_payload(),
        _mrms_payload(40km),
        _reports_payload(80km, 6h),
+       _lightning_payload(40km, 15min),
        return_exceptions=True)
    │
    ├─ collect degraded from each sub-payload + any that threw
@@ -213,7 +215,7 @@ The server is `async`, but two kinds of work block:
 - **CPU/blocking work** — cfgrib/eccodes GRIB decode (RAP, MRMS), MetPy
   computation, MetPy Level 2 parsing, and **boto3 S3 calls** — is pushed off the
   event loop with `asyncio.to_thread`. The MRMS tool runs five product samples
-  in parallel threads; the threat brief runs five sources in parallel.
+  in parallel threads; the threat brief runs six sources in parallel.
 
 Because boto3 **client creation** is not thread-safe, both `mrms.py` and
 `nexrad.py` guard their lazy client init with a `threading.Lock` and use a
@@ -235,6 +237,7 @@ time; recorded in `fixtures/`):
 | **MRMS** | `s3://noaa-mrms-pds` (anon) | cfgrib names every field `unknown` → product identity comes from the S3 key. Lats descending, lons 0–360. MESH/VIL on a 0.01° grid, rotation tracks on 0.005°. Sentinels differ by product (−3/−1 vs −999/−99 vs 0). Rotation values are in 0.001/s. Irregular-second filenames → latest = lexicographic max of the day folder. |
 | **IEM** | `mesonet.agron.iastate.edu/api/1/nws/lsrs_by_point` | Time filter is silently ignored unless **both** `begints` and `endts` are sent. Magnitude semantics vary by type (hail inches, wind mph, tornado null). Case-varying unit strings. The same endpoint serves arbitrary past single-day windows (historical tool) back to ~2005; there is **no** server-side row cap, so the historical path keeps the radius small and the window to one day. `product_id` can lag the event by days — always use `valid` for the event time. |
 | **NEXRAD** | `s3://unidata-nexrad-level2` (anon) | The old `noaa-nexrad-level2` bucket 403s since 2025-09 → use `unidata-`. `_MDM` sidecar files must be filtered. Classify sites by the station table's STNTYPE, not ICAO (TJUA is a T-prefixed WSR-88D); skip ROC/NSSL test radars (KCRI, KOUN). Echo top is a coarse 4/3-earth beam-height estimate, range-capped to avoid distant-precip artifacts. |
+| **GOES GLM** | `s3://noaa-goes19` (anon) | Operational GOES-East is **goes19**, not goes16/17 (do not hardcode the satellite from memory — the canary watches for it going empty). Keys carry an s-tag start time (year/day-of-year/HH:MM:SS/tenths); granules are ~20 s, keys sort chronologically. File is netCDF4 → `h5netcdf` engine (extra deps). flash lon is −180..180; GLM is **total** lightning (in-cloud + CG), not CG-only. |
 
 ---
 

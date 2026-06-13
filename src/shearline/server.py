@@ -18,7 +18,7 @@ from .derive import threat as threat_derive
 from .derive import trend as trend_derive
 from .derive.environment import compute_environment, interpret_environment
 from .envelope import envelope
-from .sources import iem, mrms, nexrad, nws, rap, spc
+from .sources import iem, lightning, mrms, nexrad, nws, rap, spc
 
 mcp = FastMCP(
     "shearline",
@@ -327,6 +327,21 @@ async def _environment_trend_payload(lat: float, lon: float) -> dict[str, Any]:
     return envelope(data, trend_derive.interpret_trend(series))
 
 
+async def _lightning_payload(
+    lat: float, lon: float, radius_km: float, minutes: float
+) -> dict[str, Any]:
+    try:
+        data = await lightning.fetch_lightning(lat, lon, radius_km, minutes)
+    except Exception as exc:
+        return envelope(
+            {"point": {"lat": lat, "lon": lon}, "radius_km": radius_km, "window_minutes": minutes},
+            f"GOES GLM lightning is currently unavailable ({exc}).",
+            degraded=["goes-glm"],
+        )
+    data["point"] = {"lat": lat, "lon": lon}
+    return envelope(data, lightning.interpret(data))
+
+
 async def _mrms_payload(lat: float, lon: float, radius_km: float) -> dict[str, Any]:
     degraded: list[str] = []
     samples: dict[str, dict | None] = {}
@@ -472,6 +487,24 @@ async def get_mrms_severe(lat: float, lon: float, radius_km: float = 40) -> dict
 
 
 @mcp.tool()
+async def get_lightning(
+    lat: float, lon: float, radius_km: float = 40, minutes: float = 15
+) -> dict[str, Any]:
+    """GOES GLM total-lightning activity near a CONUS point in the recent window.
+
+    Returns the flash count and rate within radius_km over the last `minutes`,
+    the nearest strike (distance/bearing/time), and a tiered outdoor-safety
+    interpretation (overhead / within-striking-distance / in-the-area). GLM
+    detects total lightning — both in-cloud and cloud-to-ground — from the
+    GOES-East satellite, with ~20-40 s latency.
+    """
+    check_conus(lat, lon)
+    return await _lightning_payload(
+        lat, lon, _clamp(radius_km, 5, 100), _clamp(minutes, 1, 30)
+    )
+
+
+@mcp.tool()
 async def get_storm_reports(
     lat: float, lon: float, radius_km: float = 80, hours: float = 6
 ) -> dict[str, Any]:
@@ -525,9 +558,10 @@ async def get_threat_brief(lat: float, lon: float) -> dict[str, Any]:
         _environment_payload(lat, lon),
         _mrms_payload(lat, lon, 40),
         _reports_payload(lat, lon, 80, 6),
+        _lightning_payload(lat, lon, 40, 15),
         return_exceptions=True,
     )
-    names = ["warnings", "spc-outlook", "rap-environment", "mrms", "storm-reports"]
+    names = ["warnings", "spc-outlook", "rap-environment", "mrms", "storm-reports", "glm-lightning"]
     payloads: list[dict | None] = []
     degraded: list[str] = []
     for name, result in zip(names, results, strict=True):

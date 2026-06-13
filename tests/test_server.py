@@ -22,8 +22,10 @@ ALL_TOOLS = [
     server.get_active_warnings,
     server.get_spc_outlook,
     server.get_point_environment,
+    server.get_environment_trend,
     server.get_mrms_severe,
     server.get_storm_reports,
+    server.get_lightning,
     server.get_threat_brief,
     server.get_radar_snapshot,
 ]
@@ -52,6 +54,7 @@ async def test_mcp_registers_expected_tools():
         "get_mrms_severe",
         "get_storm_reports",
         "get_historical_storm_reports",
+        "get_lightning",
         "get_threat_brief",
         "get_radar_snapshot",
     }
