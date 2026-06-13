@@ -2,6 +2,12 @@
 
 # SHEARLINE
 
+[![PyPI](https://img.shields.io/pypi/v/shearline)](https://pypi.org/project/shearline/)
+[![Python](https://img.shields.io/pypi/pyversions/shearline)](https://pypi.org/project/shearline/)
+[![CI](https://github.com/lostnumber07/shearline/actions/workflows/ci.yml/badge.svg)](https://github.com/lostnumber07/shearline/actions/workflows/ci.yml)
+[![MCP Registry](https://img.shields.io/badge/MCP%20registry-io.github.lostnumber07%2Fshearline-blue)](https://registry.modelcontextprotocol.io/v0.1/servers?search=shearline)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 **The severe-weather analyst your agent doesn't have.** SHEARLINE is a free, MIT-licensed MCP server that gives AI agents analyst-grade US severe-weather tools: live warning polygons with Impact-Based Warning tags, SPC convective outlooks, RAP-derived point environments (CAPE/shear/SRH/STP computed with MetPy), MRMS radar-derived hail and rotation products, ground-truth storm reports, and a composite threat brief that synthesizes all of it. A dozen weather MCPs already wrap the basic forecast API; SHEARLINE deliberately skips everything they do and ships only what requires radar meteorology to expose correctly.
 
 > **Informational only. Not a substitute for official NWS warnings.** Every tool repeats this, because it matters: when weather threatens, follow official warnings from weather.gov and local authorities.
@@ -53,12 +59,12 @@ And the same tool for a quiet coastal Maine point reads as confidently quiet —
 
 ## Install
 
-Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/). No API keys — every data source is public and anonymous.
+Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/). No API keys — every data source is public and anonymous. `uvx` downloads and runs the published package in one step; nothing is installed permanently.
 
 **Claude Code:**
 
 ```sh
-claude mcp add shearline -- uvx --from git+https://github.com/lostnumber07/shearline shearline
+claude mcp add shearline -- uvx shearline
 ```
 
 **Claude Desktop** (`claude_desktop_config.json`):
@@ -68,20 +74,20 @@ claude mcp add shearline -- uvx --from git+https://github.com/lostnumber07/shear
   "mcpServers": {
     "shearline": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/lostnumber07/shearline", "shearline"]
+      "args": ["shearline"]
     }
   }
 }
 ```
 
-(Once published to PyPI, `uvx shearline` alone works.)
-
 **Streamable HTTP** (for remote/agent-platform use):
 
 ```sh
-uvx --from git+https://github.com/lostnumber07/shearline shearline --http --port 8741
+uvx shearline --http --port 8741
 # serves at http://127.0.0.1:8741/mcp
 ```
+
+To run the latest unreleased `main` instead of the PyPI release, swap `shearline` for `--from git+https://github.com/lostnumber07/shearline shearline`.
 
 ## Why these tools
 
@@ -104,6 +110,10 @@ A forecast API tells you it might rain. None of the questions that matter on a s
 
 Coverage is **continental US only** — out-of-bounds coordinates are rejected with a clear error. Upstream fetches are cached (warnings 60 s, MRMS 120 s, LSRs 300 s, outlooks/RAP 30 min) and degrade gracefully: if one source is down, you get partial data plus a `degraded` field, never a bare exception.
 
+## Architecture
+
+SHEARLINE is a thin, layered async server: per-source fetch/parse modules feed a meteorology derivation layer, which feeds a uniform tool layer. Every tool returns the same `{data, interpretation, degraded, disclaimer}` envelope, every upstream call is TTL-cached, and one failing source degrades to partial data instead of an exception. See **[ARCHITECTURE.md](ARCHITECTURE.md)** for the module map, the request lifecycle of `get_threat_brief`, the concurrency model, and the upstream quirks each source module encodes.
+
 ## Development
 
 ```sh
@@ -114,6 +124,8 @@ uv run ruff check .
 uv run shearline       # stdio
 uv run python scripts/smoke.py   # live smoke test, both transports
 ```
+
+See [ARCHITECTURE.md](ARCHITECTURE.md#adding-a-tool) for how to add a tool or data source.
 
 ## License
 
