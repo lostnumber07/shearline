@@ -1,0 +1,117 @@
+{
+  "source_id": "hrrr",
+  "verified_utc": "2026-06-13T19:09Z",
+  "verifier": "shearline upstream-verification subagent",
+  "summary": "HRRR 3km CONUS convection-allowing model. The 3D pressure-level product (wrfprs) carries the full severe-env state vector but is NOT exposed by any NOMADS grib-filter CGI; only wrfsfc (2D) and wrfsubh are filterable. Full profile therefore requires byte-range subsetting against the .idx (pulls full CONUS field per message, ~36MB for a minimal profile) OR accept a thin 5-level mandatory profile from the filterable wrfsfc product. Recommend: documented TODO, byte-range path, not the RAP-style filter path.",
+  "recommendation": "OPTIONAL / DOCUMENTED TODO. HRRR cleanly verifies and decodes, but it does NOT have a drop-in RAP-style grib-filter path for the dense pressure profile. Implementing the trend tool on HRRR needs real extra work (byte-range .idx subsetting + native Lambert grid nearest-neighbor + cfgrib coord-clash workarounds). RAP filter_rap.pl remains the path of least resistance for get_point_environment; HRRR is the richer-but-heavier alternative.",
+
+  "data_dir": {
+    "base": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/hrrr/prod/hrrr.{YYYYMMDD}/conus/",
+    "verified_listing": "hrrr.20260613/conus/ HTTP 200, 387701 bytes",
+    "products_present": ["wrfnat (native hybrid lvls)", "wrfprs (3D isobaric)", "wrfsfc (2D surface/derived)", "wrfsubh (15-min sub-hourly)", "buf (bufr soundings)"],
+    "target_product": "wrfprs",
+    "filename_f00": "hrrr.t{HH}z.wrfprsf00.grib2",
+    "filename_f03": "hrrr.t{HH}z.wrfprsf03.grib2",
+    "filename_pattern": "hrrr.t{HH}z.wrfprsf{FF}.grib2   (HH=cycle 00-23, FF=forecast hour zero-padded 2-digit)",
+    "idx_pattern": "hrrr.t{HH}z.wrfprsf{FF}.grib2.idx   (wgrib2-style .idx present for every grib2; required for byte-range subsetting)",
+    "cycles": "hourly, t00z..t23z",
+    "forecast_hours": {
+      "extended_cycles_00_06_12_18Z": "f00..f48",
+      "other_cycles": "f00..f18",
+      "verified": "t12z wrfprs present f00-f48; t13z wrfprs present f00-f18"
+    },
+    "step_token_in_idx": {"f00": "anl", "f03": "3 hour fcst"}
+  },
+
+  "filter_cgi": {
+    "filter_hrrr.pl": "HTTP 404 (DOES NOT EXIST -- do not use; this is the obvious-but-wrong name)",
+    "filter_hrrr_2d.pl": "HTTP 200 -- serves ONLY hrrr.t{HH}z.wrfsfcf{FF}.grib2 (2D surface/derived product)",
+    "filter_hrrr_sub.pl": "HTTP 200 -- serves ONLY hrrr.t{HH}z.wrfsubhf{FF}.grib2 (sub-hourly)",
+    "no_filter_for_wrfprs": "CONFIRMED: there is NO grib-filter CGI that exposes the wrfprs (3D isobaric) product. Spatial subregion subsetting (subregion=on&leftlon&rightlon&toplat&bottomlat) is therefore unavailable for the dense profile.",
+    "note": "RAP differs: filter_rap.pl exists and serves the awp130pgrb (pressure) product directly. HRRR's pressure product has no equivalent filter."
+  },
+
+  "wrfprs_idx": {
+    "fixture": "fixtures/hrrr_wrfprsf00.idx",
+    "source": "hrrr.20260613/conus/hrrr.t12z.wrfprsf00.grib2.idx, HTTP 200, 708 records",
+    "pressure_levels_mb": "50,75,100,125,150,175,200,225,250,275,300,325,350,375,400,425,450,475,500,525,550,575,600,625,650,675,700,725,750,775,800,825,850,875,900,925,950,975,1000,1013.2  (25-mb spacing, 40 levels)",
+    "profile_vars_on_pressure_levels": ["HGT (gpm)", "TMP (K)", "DPT (K)", "RH (%)", "SPFH (kg/kg)", "UGRD (m/s)", "VGRD (m/s)", "VVEL", "ABSV", "+hydrometeors CLWMR/RWMR/SNMR/GRLE/CIMIXR"],
+    "moisture_note": "wrfprs has DPT, RH, AND SPFH on pressure levels (RAP-style DPT is present; pick DPT for MetPy parcel calc). HRRR thus does NOT force you to derive Td from SPFH.",
+    "severe_env_single_levels": {
+      "CAPE:surface": "present",
+      "CIN:surface": "present",
+      "CAPE/CIN:180-0 mb above ground": "present (mixed-layer)",
+      "CAPE/CIN:90-0 mb above ground": "present",
+      "CAPE/CIN:255-0 mb above ground": "present",
+      "CAPE:0-3000 m above ground": "present",
+      "HLCY:3000-0 m above ground": "present (0-3km SRH)",
+      "HLCY:1000-0 m above ground": "present (0-1km SRH)",
+      "USTM:0-6000 m above ground": "present (Bunkers U storm motion)",
+      "VSTM:0-6000 m above ground": "present (Bunkers V storm motion)",
+      "DPT:2 m above ground / SPFH:2 m / RH:2 m": "present (surface moisture)"
+    }
+  },
+
+  "wrfsfc_filterable_profile": {
+    "note": "If you insist on the clean filter_hrrr_2d.pl path (spatial subregion supported), the wrfsfc product only carries a THIN mandatory-level profile -- too sparse for a high-quality trend tool.",
+    "TMP_mb_levels": ["1000","925","850","700","500"],
+    "DPT_mb_levels": ["1000","925","850","700","500"],
+    "HGT_mb_levels": ["1000","850","700","500"],
+    "UGRD_VGRD_mb_levels": ["1000","925","850","700","500","300","250"],
+    "RH_on_pressure_levels": "NONE",
+    "SPFH_on_pressure_levels": "NONE",
+    "severe_single_levels": "same CAPE/CIN/HLCY/USTM/VSTM set as wrfprs (all present in wrfsfc too)"
+  },
+
+  "byte_range_subset_path": {
+    "fixture_grib": "fixtures/hrrr_subset_okc_f00.grib2 (36576577 bytes / 36.6 MB)",
+    "method": "Per-idx-record HTTP Range GETs (bytes=start-end) concatenated into a valid multi-message grib2. NOMADS returns HTTP 206 for ranges. Multi-message concat decodes fine in cfgrib.",
+    "CRITICAL_no_spatial_subset": "A Range GET retrieves the ENTIRE CONUS field for that GRIB message (1799x1059 = 1.9M points). There is NO way to spatially subset via byte-range. Minimal 49-record profile (7 mandatory mb levels x 5 vars + 5 single-levels + 2m DPT) = 36.6 MB. The FULL 40-level profile for 7 vars = ~225 MB. This is the heavy cost vs RAP's ~50KB filter subset.",
+    "records_in_fixture": "TMP/DPT/UGRD/VGRD/HGT on 1000/925/850/700/500/300/250 mb + sfc CAPE/CIN + HLCY(0-1km,0-3km) + USTM/VSTM + DPT:2m"
+  },
+
+  "cfgrib_decode": {
+    "verified": true,
+    "engine": "cfgrib 0.9.15.1, xarray 2026.4.0, metpy 1.7.1, numpy 2.4.6",
+    "open_pattern": "xr.open_dataset(path, engine='cfgrib', backend_kwargs={'filter_by_keys':{'typeOfLevel':'isobaricInhPa'},'indexpath':''})",
+    "isobaric_data_vars": {"gh":"gpm (Geopotential height)", "t":"K", "dpt":"K", "u":"m s**-1", "v":"m s**-1"},
+    "isobaric_dims": "(isobaricInhPa, y, x) -- e.g. (7, 1059, 1799) for the 7-level fixture",
+    "GOTCHA_coord_clash": "Opening typeOfLevel='heightAboveGroundLayer' raises cfgrib DatasetBuildError and SILENTLY SKIPS ustm/vstm/surface-cape: hlcy has heightAboveGroundLayer=[1000,3000] but ustm/vstm have a scalar 0.0 on the same key. You MUST read ustm/vstm/cape with a tighter filter, e.g. filter_by_keys={'shortName':'ustm'} (level resolves to scalar 0.0) and {'shortName':'cape','typeOfLevel':'surface'}. hlcy reads fine via {'typeOfLevel':'heightAboveGroundLayer'} alone.",
+    "surface_cape": "filter_by_keys={'shortName':'cape','typeOfLevel':'surface'} -> var 'cape' units J kg**-1",
+    "hlcy": "filter_by_keys={'typeOfLevel':'heightAboveGroundLayer'} -> var 'hlcy' units m**2 s**-2, dim heightAboveGroundLayer=[1000.,3000.]",
+    "ustm_vstm": "filter_by_keys={'shortName':'ustm'|'vstm'} -> units m s**-1, scalar level 0.0",
+    "d2m": "2m dewpoint decodes as var 'd2m' under typeOfLevel='heightAboveGround'"
+  },
+
+  "grid": {
+    "GRIB_gridType": "lambert (Lambert Conformal Conic) -- NOT regular lat/lon (RAP awp130 is also lambert; but coordinates here are native 3km)",
+    "Nx": 1799, "Ny": 1059, "DxInMetres": 3000.0, "DyInMetres": 3000.0,
+    "LaDInDegrees": 38.5, "Latin1": 38.5, "Latin2": 38.5, "LoVInDegrees": 262.5,
+    "lat1": 21.138123, "lon1": 237.280472,
+    "coordinate_arrays": "latitude/longitude are 2D arrays shape (1059,1799) with dims (y,x). longitude is 0..360 (e.g. OKC lon=262.48, NOT -97.52).",
+    "point_extraction": "Nearest-neighbor: convert target lon to 0..360, compute argmin of (lat2d-lat)^2+(lon2d-lon)^2, isel(y=iy,x=ix). For OKC (35.47, 262.48) nearest grid pt was 0.016 deg away (3km grid).",
+    "lat_extent": "21.138 .. 52.616 N", "lon_extent": "225.905 .. 299.083 (0..360)"
+  },
+
+  "sentinels": {
+    "GRIB_missingValue": "3.4028234663852886e+38 (float32 max). cfgrib also maps undefined/bitmap-masked points to 9.999e20 in some products; treat both as missing. Mask before MetPy."
+  },
+
+  "metpy_pipeline_check": {
+    "verified": true,
+    "steps": "cfgrib decode -> 2D nearest-neighbor column extract -> attach metpy units (hPa/degC/m_s) -> sort descending pressure -> mpcalc.surface_based_cape_cin + mpcalc.bulk_shear all run without error on the OKC column.",
+    "note": "CAPE from the truncated 7-level fixture is only illustrative (326 J/kg); a production trend tool should fetch the dense 40-level wrfprs profile for accurate parcel ascent."
+  },
+
+  "gotchas_for_implementer": [
+    "filter_hrrr.pl is a 404. The HRRR filter scripts are filter_hrrr_2d.pl (wrfsfc) and filter_hrrr_sub.pl (wrfsubh) ONLY. Neither serves wrfprs.",
+    "No grib-filter exposes the dense 3D pressure product -> no spatial subregion subsetting for the full profile. This is the single biggest divergence from the RAP path.",
+    "Byte-range subsetting works (HTTP 206) but pulls full CONUS per message: ~36MB minimal, ~225MB full profile. Plan caching/timeout/size budget accordingly.",
+    "cfgrib SILENTLY SKIPS ustm/vstm/surface-cape when opening typeOfLevel='heightAboveGroundLayer' due to a coord clash with hlcy. Read those three with shortName/typeOfLevel-specific filter_by_keys or you will lose storm motion + surface CAPE without an error.",
+    "Native Lambert 3km grid with 2D lat/lon arrays and 0..360 longitudes -- you cannot use ds.sel(latitude=..., longitude=...) like a regular grid; you must do explicit 2D nearest-neighbor. RAP awp130 is a coarser 13km lambert; HRRR point extraction code is NOT reusable as-is.",
+    "Forecast hours: only the 00/06/12/18Z cycles extend to f48; all other cycles stop at f18. A trend tool that wants long lead times must pin to extended cycles.",
+    "wrfprs has DPT directly on pressure levels (good -- no SPFH->Td derivation needed), unlike some products. RH and SPFH are also present if preferred.",
+    "Use --http1.1 with curl against NOMADS (HTTP/2 negotiation can stall). httpx with http2=False works fine for the Range fetches.",
+    "The dir is real-time prod only (hrrr.{today}, ~last 2 days). For historical/archive use the AWS noaa-hrrr-bdp-pds S3 bucket (NOT verified in this probe)."
+  ]
+}

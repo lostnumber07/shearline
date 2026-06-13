@@ -348,6 +348,27 @@ async def _reports_payload(
     return envelope(data, iem.interpret(reports, radius_km, hours))
 
 
+async def _historical_reports_payload(
+    lat: float, lon: float, date_iso: str, radius_km: float
+) -> dict[str, Any]:
+    try:
+        reports = await iem.fetch_historical_reports(lat, lon, radius_km, date_iso)
+    except Exception as exc:
+        return envelope(
+            {"point": {"lat": lat, "lon": lon}, "radius_km": radius_km, "date": date_iso},
+            f"Historical storm reports for {date_iso} are currently unavailable ({exc}).",
+            degraded=["iem-lsr-historical"],
+        )
+    data = {
+        "point": {"lat": lat, "lon": lon},
+        "radius_km": radius_km,
+        "date": date_iso,
+        "counts": iem.count_reports(reports),
+        "reports": reports[:200],
+    }
+    return envelope(data, iem.interpret_historical(reports, radius_km, date_iso))
+
+
 # --------------------------------------------------------------------------
 # Tools
 # --------------------------------------------------------------------------
@@ -423,6 +444,26 @@ async def get_storm_reports(
     check_conus(lat, lon)
     return await _reports_payload(
         lat, lon, _clamp(radius_km, 5, 500), _clamp(hours, 1, 48)
+    )
+
+
+@mcp.tool()
+async def get_historical_storm_reports(
+    lat: float, lon: float, date: str, radius_km: float = 80
+) -> dict[str, Any]:
+    """Local Storm Reports near a CONUS point on a specific PAST date.
+
+    Answers "what hail/wind/tornado hit this location on this day." `date` is a
+    single UTC calendar day formatted 'YYYY-MM-DD'. Returns normalized reports
+    (type, magnitude with units, time, location, distance/bearing, remarks) plus
+    a summary. Coverage begins ~2005; the data is preliminary NWS/spotter reports
+    via the Iowa Environmental Mesonet, not the final NCEI Storm Events record.
+    For the current situation use get_storm_reports instead.
+    """
+    check_conus(lat, lon)
+    date_iso = iem.validate_historical_date(date)
+    return await _historical_reports_payload(
+        lat, lon, date_iso, _clamp(radius_km, 5, 200)
     )
 
 

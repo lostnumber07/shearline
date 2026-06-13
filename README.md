@@ -21,6 +21,7 @@
 | `get_point_environment(lat, lon)` | Latest RAP 13-km analysis profile computed with MetPy: MLCAPE/MUCAPE/CINs, LCL, 0–1/0–6 km shear, 0–1/0–3 km SRH, Bunkers motion, effective inflow layer, effective SRH/shear, SCP, and significant-tornado parameter — interpreted like an analyst (pulse vs. cool-season high-shear vs. classic supercell parameter space). |
 | `get_mrms_severe(lat, lon, radius_km=40)` | MRMS maxima within radius: 60-min MESH (hail, inches and mm), low-level and mid-level rotation tracks (azimuthal shear), VIL, composite reflectivity — each with valid time and distance/bearing of the max. |
 | `get_storm_reports(lat, lon, radius_km=80, hours=6)` | Normalized Local Storm Reports: type, magnitude with units, time, location, distance/bearing, remarks. |
+| `get_historical_storm_reports(lat, lon, date, radius_km=80)` | What hail/wind/tornado hit a point on a specific past date (`YYYY-MM-DD`, UTC) — normalized reports with magnitude+units and distance/bearing, for the insurance / ag / forensic use case. Coverage from ~2005; preliminary LSRs, not the final NCEI record. |
 | `get_threat_brief(lat, lon)` | The showpiece: runs everything above concurrently and synthesizes a threat level (none/marginal/elevated/significant/extreme) **with stated logic**, hazards ranked, environment summary, nearest storm signature, and a recommended attention window. |
 | `get_radar_snapshot(lat, lon)` | Nearest WSR-88D's latest Level 2 volume metadata: VCP (scan strategy), max reflectivity with range/azimuth, coarse echo-top estimate. |
 
@@ -105,7 +106,7 @@ A forecast API tells you it might rain. None of the questions that matter on a s
 - Outlooks: [Storm Prediction Center](https://www.spc.noaa.gov/) public GeoJSON
 - Point environment: [NOMADS](https://nomads.ncep.noaa.gov/) RAP grib filter, derived with [MetPy](https://unidata.github.io/MetPy/)
 - MRMS: [NOAA MRMS on AWS Open Data](https://registry.opendata.aws/noaa-mrms-pds/)
-- Storm reports: [Iowa Environmental Mesonet](https://mesonet.agron.iastate.edu/) LSR service
+- Storm reports (real-time and historical): [Iowa Environmental Mesonet](https://mesonet.agron.iastate.edu/) LSR service
 - NEXRAD Level 2: [Unidata on AWS Open Data](https://registry.opendata.aws/noaa-nexrad/)
 
 Coverage is **continental US only** — out-of-bounds coordinates are rejected with a clear error. Upstream fetches are cached (warnings 60 s, MRMS 120 s, LSRs 300 s, outlooks/RAP 30 min) and degrade gracefully: if one source is down, you get partial data plus a `degraded` field, never a bare exception.
