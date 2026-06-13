@@ -16,8 +16,9 @@ from mcp.client.streamable_http import streamablehttp_client
 async def exercise(session: ClientSession, transport: str) -> None:
     tools = await session.list_tools()
     names = [t.name for t in tools.tools]
-    assert len(names) == 7, f"expected 7 tools, got {names}"
-    print(f"[{transport}] 7 tools listed OK")
+    assert len(names) >= 8, f"expected >=8 tools, got {names}"
+    assert "get_threat_brief" in names and "get_lightning" in names
+    print(f"[{transport}] {len(names)} tools listed OK")
 
     t0 = time.time()
     result = await session.call_tool(

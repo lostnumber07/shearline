@@ -8,6 +8,7 @@ whatever sources succeeded plus a `degraded` list, never a bare traceback.
 
 import argparse
 import asyncio
+import os
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
@@ -18,6 +19,7 @@ from .derive import threat as threat_derive
 from .derive import trend as trend_derive
 from .derive.environment import compute_environment, interpret_environment
 from .envelope import envelope
+from .observability import observe
 from .sources import iem, lightning, mrms, nexrad, nws, rap, spc
 
 mcp = FastMCP(
@@ -415,6 +417,7 @@ async def _historical_reports_payload(
 
 
 @mcp.tool()
+@observe
 async def get_active_warnings(lat: float, lon: float, radius_km: float = 40) -> dict[str, Any]:
     """Active NWS severe-weather warning polygons near a CONUS point.
 
@@ -429,6 +432,7 @@ async def get_active_warnings(lat: float, lon: float, radius_km: float = 40) -> 
 
 
 @mcp.tool()
+@observe
 async def get_spc_outlook(lat: float, lon: float, day: int = 1) -> dict[str, Any]:
     """SPC convective outlook at a CONUS point for day 1, 2, or 3.
 
@@ -444,6 +448,7 @@ async def get_spc_outlook(lat: float, lon: float, day: int = 1) -> dict[str, Any
 
 
 @mcp.tool()
+@observe
 async def get_point_environment(lat: float, lon: float) -> dict[str, Any]:
     """RAP-analysis severe-weather environment at a CONUS point.
 
@@ -459,6 +464,7 @@ async def get_point_environment(lat: float, lon: float) -> dict[str, Any]:
 
 
 @mcp.tool()
+@observe
 async def get_environment_trend(lat: float, lon: float) -> dict[str, Any]:
     """RAP forecast-environment trend at a CONUS point (the anticipatory view).
 
@@ -474,6 +480,7 @@ async def get_environment_trend(lat: float, lon: float) -> dict[str, Any]:
 
 
 @mcp.tool()
+@observe
 async def get_mrms_severe(lat: float, lon: float, radius_km: float = 40) -> dict[str, Any]:
     """MRMS radar-derived severe weather products near a CONUS point.
 
@@ -487,6 +494,7 @@ async def get_mrms_severe(lat: float, lon: float, radius_km: float = 40) -> dict
 
 
 @mcp.tool()
+@observe
 async def get_lightning(
     lat: float, lon: float, radius_km: float = 40, minutes: float = 15
 ) -> dict[str, Any]:
@@ -505,6 +513,7 @@ async def get_lightning(
 
 
 @mcp.tool()
+@observe
 async def get_storm_reports(
     lat: float, lon: float, radius_km: float = 80, hours: float = 6
 ) -> dict[str, Any]:
@@ -521,6 +530,7 @@ async def get_storm_reports(
 
 
 @mcp.tool()
+@observe
 async def get_historical_storm_reports(
     lat: float, lon: float, date: str, radius_km: float = 80
 ) -> dict[str, Any]:
@@ -541,6 +551,7 @@ async def get_historical_storm_reports(
 
 
 @mcp.tool()
+@observe
 async def get_threat_brief(lat: float, lon: float) -> dict[str, Any]:
     """Composite severe-weather threat brief for a CONUS point.
 
@@ -577,6 +588,7 @@ async def get_threat_brief(lat: float, lon: float) -> dict[str, Any]:
 
 
 @mcp.tool()
+@observe
 async def get_radar_snapshot(lat: float, lon: float) -> dict[str, Any]:
     """Latest NEXRAD Level 2 volume metadata from the nearest WSR-88D radar.
 
@@ -609,11 +621,29 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.http:
-        mcp.settings.host = args.host
-        mcp.settings.port = args.port
-        mcp.run(transport="streamable-http")
+        _run_http(args.host, args.port)
     else:
+        # stdio: no logging to stdout (it carries the JSON-RPC stream), no rate
+        # limiting, no observability — behaviour is exactly as before.
         mcp.run()
+
+
+def _run_http(host: str, port: int) -> None:
+    """Serve streamable HTTP with structured per-request logging and a per-client
+    rate limit. Observability is enabled here and only here (never in stdio)."""
+    import uvicorn
+
+    from . import observability
+    from .ratelimit import RateLimitMiddleware
+
+    observability.configure(os.environ.get("SHEARLINE_LOG_LEVEL", "INFO"))
+    if os.environ.get("SHEARLINE_HTTP_LOG", "1") != "0":
+        observability.enable()
+
+    mcp.settings.host = host
+    mcp.settings.port = port
+    app = RateLimitMiddleware.from_env(mcp.streamable_http_app())
+    uvicorn.run(app, host=host, port=port, log_level="warning")
 
 
 if __name__ == "__main__":

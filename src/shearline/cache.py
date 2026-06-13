@@ -10,7 +10,26 @@ MRMS sample keys) indefinitely.
 import asyncio
 import time
 from collections.abc import Awaitable, Callable
+from contextvars import ContextVar
 from typing import Any
+
+# Per-request cache hit/miss counters for HTTP observability. A request scope
+# (the @observe wrapper) sets a fresh dict; get_or_fetch increments it. Using a
+# ContextVar keeps counts correct under concurrent requests and propagates into
+# the child tasks of a fan-out tool (e.g. the threat brief).
+_metrics: ContextVar[dict[str, int] | None] = ContextVar("cache_metrics", default=None)
+
+
+def start_metrics() -> dict[str, int]:
+    m = {"hits": 0, "misses": 0}
+    _metrics.set(m)
+    return m
+
+
+def _record(hit: bool) -> None:
+    m = _metrics.get()
+    if m is not None:
+        m["hits" if hit else "misses"] += 1
 
 # TTLs in seconds (invariant 5)
 TTL_ALERTS = 60
@@ -51,12 +70,15 @@ class TTLCache:
         hit = self._entries.get(key)
         if hit is not None:
             if hit[0] > time.monotonic():
+                _record(True)
                 return hit[1]
             self._entries.pop(key, None)
         async with self._lock_for(key):
             hit = self._entries.get(key)
             if hit is not None and hit[0] > time.monotonic():
+                _record(True)
                 return hit[1]
+            _record(False)
             value = await fetch()
             self._entries[key] = (time.monotonic() + ttl, value)
             self._sweep()
