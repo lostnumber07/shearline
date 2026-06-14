@@ -8,7 +8,7 @@
 [![MCP Registry](https://img.shields.io/badge/MCP%20registry-io.github.lostnumber07%2Fshearline-blue)](https://registry.modelcontextprotocol.io/v0.1/servers?search=shearline)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**The severe-weather analyst your agent doesn't have.** SHEARLINE is a free, MIT-licensed MCP server that gives AI agents analyst-grade US severe-weather tools: live warning polygons with Impact-Based Warning tags, SPC convective outlooks, RAP-derived point environments (CAPE/shear/SRH/STP computed with MetPy), MRMS radar-derived hail and rotation products, ground-truth storm reports, and a composite threat brief that synthesizes all of it. A dozen weather MCPs already wrap the basic forecast API; SHEARLINE deliberately skips everything they do and ships only what requires radar meteorology to expose correctly.
+**The severe-weather analyst your agent doesn't have.** SHEARLINE is a free, MIT-licensed MCP server that gives AI agents analyst-grade US severe-weather tools: live warning polygons with Impact-Based Warning tags, SPC convective outlooks, RAP-derived point environments **and forecast trends** (CAPE/shear/SRH/STP computed with MetPy), MRMS radar-derived hail and rotation products, GOES lightning, ground-truth storm reports (real-time **and historical**), and a composite threat brief that synthesizes all of it. A dozen weather MCPs already wrap the basic forecast API; SHEARLINE deliberately skips everything they do and ships only what requires radar meteorology to expose correctly.
 
 > **Informational only. Not a substitute for official NWS warnings.** Every tool repeats this, because it matters: when weather threatens, follow official warnings from weather.gov and local authorities.
 
@@ -27,7 +27,7 @@
 | `get_threat_brief(lat, lon)` | The showpiece: runs everything above concurrently and synthesizes a threat level (none/marginal/elevated/significant/extreme) **with stated logic**, hazards ranked, environment summary, nearest storm signature, and a recommended attention window. |
 | `get_radar_snapshot(lat, lon)` | Nearest WSR-88D's latest Level 2 volume metadata: VCP (scan strategy), max reflectivity with range/azimuth, coarse echo-top estimate. |
 
-Every tool returns structured JSON with `data` (numeric fields, units stated), `interpretation` (plain-language analyst sentences), `degraded` (which upstream sources failed, if any — partial data instead of errors), and the safety `disclaimer`.
+Every tool returns structured JSON with `data` (numeric fields, units stated), `interpretation` (plain-language analyst sentences), `degraded` (which upstream sources failed, if any — partial data instead of errors), the safety `disclaimer`, and a `schema_version` — the field contract is semver-stable (see [ARCHITECTURE](ARCHITECTURE.md#stability-contract)), so integrators can depend on it.
 
 ## Example: threat brief during a real outbreak
 
@@ -113,7 +113,9 @@ A forecast API tells you it might rain. None of the questions that matter on a s
 - **Warnings with IBW tags, not just warning text.** A base-tier Severe Thunderstorm Warning and one tagged `DESTRUCTIVE` with 80 mph gusts are different planning problems. SHEARLINE parses the machine-readable tags (max hail size, max gust, tornado detection/damage threat) and the storm-motion vector, and does the point-in-polygon test for you.
 - **The environment, computed honestly.** CAPE without shear is a pulse-storm day; shear without CAPE is wind-driven rain. SHEARLINE pulls the current RAP analysis profile and computes the discriminating quantities with MetPy — including the effective inflow layer, effective SRH/shear, SCP, and STP — because high-CAPE/low-shear, low-CAPE/high-shear, and classic supercell parameter spaces produce very different hazards, and the interpretation says which one you're in.
 - **MRMS, because warnings lag storms.** MESH tells you what hail a storm has *already* produced; rotation tracks show where mesocyclones have tracked in the last hour — both on a ~2-minute cadence from the national radar mosaic, often ahead of the next warning update.
-- **LSRs, because radar isn't ground truth.** Spotter reports confirm what's actually reaching the ground.
+- **LSRs, because radar isn't ground truth.** Spotter reports confirm what's actually reaching the ground — in real time, or for any past date (the insurance / forensic question, "what hit this address that day").
+- **Lightning, because it's the most common outdoor-safety trigger.** GOES GLM total lightning, distance-tiered to the 30-30 / 10-mile rules — the signal that actually stops a ballgame, a job site, or a drone flight.
+- **Now *and* next.** The point environment is the analysis now; the forecast *trend* (f00→f06 from one model cycle) says whether STP/CAPE is rising into the afternoon — the difference between "what is it" and "is it getting worse."
 - **One brief that reasons across all of it.** The threat level is rule-based with the triggered rules quoted back, so an agent can audit the logic instead of trusting a vibe.
 
 ## Data sources (all public, no keys)
@@ -126,7 +128,7 @@ A forecast API tells you it might rain. None of the questions that matter on a s
 - NEXRAD Level 2: [Unidata on AWS Open Data](https://registry.opendata.aws/noaa-nexrad/)
 - Lightning: [GOES GLM on AWS Open Data](https://registry.opendata.aws/noaa-goes/) (GOES-East GLM-L2-LCFA)
 
-Coverage is **continental US only** — out-of-bounds coordinates are rejected with a clear error. Upstream fetches are cached (warnings 60 s, MRMS 120 s, LSRs 300 s, outlooks/RAP 30 min) and degrade gracefully: if one source is down, you get partial data plus a `degraded` field, never a bare exception.
+Coverage is **continental US only** — out-of-bounds coordinates are rejected with a clear error. Upstream fetches are cached (warnings 60 s, MRMS/lightning 120 s, LSRs 300 s, outlooks/RAP 30 min, historical reports 6 h) and degrade gracefully: if one source is down, you get partial data plus a `degraded` field, never a bare exception. A daily [canary](scripts/canary.py) workflow checks every upstream's response shape and fails on schema drift (renamed fields, moved buckets) before it reaches you.
 
 ## Recipes for non-meteorologists
 
@@ -150,7 +152,8 @@ uv sync
 uv run pytest          # offline test suite against recorded fixtures
 uv run ruff check .
 uv run shearline       # stdio
-uv run python scripts/smoke.py   # live smoke test, both transports
+uv run python scripts/smoke.py     # live smoke test, both transports
+uv run python scripts/canary.py    # live upstream drift check (shape-only)
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md#adding-a-tool) for how to add a tool or data source.

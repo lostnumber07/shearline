@@ -17,8 +17,8 @@ For *what* the tools do and *why* these tools, see the [README](README.md). For
    MRMS, LSRs). Skip the basic forecast API that a dozen other MCPs already wrap.
 2. **No API keys, ever.** Every upstream is public and anonymous.
 3. **Uniform, self-describing output.** Every tool returns the same envelope:
-   numeric `data` with units, plain-language `interpretation`, a `degraded`
-   list, and a fixed safety `disclaimer`.
+   a `schema_version`, numeric `data` with units, plain-language
+   `interpretation`, a `degraded` list, and a fixed safety `disclaimer`.
 4. **Degrade, don't crash.** One upstream failing yields partial data plus a
    `degraded` marker — never a bare exception, and never a false "all-clear."
 5. **CONUS-only and explicit about it.** Out-of-bounds points are rejected with
@@ -46,13 +46,13 @@ For *what* the tools do and *why* these tools, see the [README](README.md). For
                                  │                              │
                   ┌──────────────▼──────────────────────────────▼──────────┐
                   │                  sources/  (per-upstream)                │
-                  │  nws · spc · rap · mrms · iem · nexrad                   │
+                  │  nws · spc · rap · mrms · iem · nexrad · lightning       │
                   │  fetch + parse + normalize one upstream each            │
                   └──────────────┬──────────────────────────────┬──────────┘
                                  │                              │
                   ┌──────────────▼─────────┐      ┌─────────────▼──────────┐
                   │  fetch.py  (async HTTP) │      │  boto3 (anonymous S3)   │
-                  │  shared client · retry  │      │  MRMS · NEXRAD buckets  │
+                  │  shared client · retry  │      │  MRMS·NEXRAD·GLM buckets │
                   └──────────────┬──────────┘      └─────────────┬──────────┘
                                  │                              │
                   ┌──────────────▼──────────────────────────────▼──────────┐
@@ -62,6 +62,7 @@ For *what* the tools do and *why* these tools, see the [README](README.md). For
 
       cross-cutting helpers:  bounds.py (CONUS gate) · geo.py (haversine/bearing)
                               envelope.py (response contract) · __init__.py (version)
+      HTTP transport only:    observability.py (@observe logging) · ratelimit.py (429)
 ```
 
 The dependency rule is strictly downward: `server` → `derive` → `sources` →
@@ -72,7 +73,7 @@ The dependency rule is strictly downward: `server` → `derive` → `sources` �
 
 | Module | Lines | Responsibility |
 | --- | ---: | --- |
-| `server.py` | ~540 | The MCP tools, the CONUS gate on every entry, the per-tool **payload builders** (which call sources + derive and assemble the envelope), and the `get_threat_brief` fan-out. The only file that imports `FastMCP`. |
+| `server.py` | ~650 | The 10 MCP tools, the CONUS gate on every entry, the per-tool **payload builders** (which call sources + derive and assemble the envelope), the `get_threat_brief` fan-out, and the HTTP-serving `_run_http` (rate limit + observability wiring). The only file that imports `FastMCP`. |
 | `derive/environment.py` | ~328 | RAP profile → severe-weather parameters via **MetPy** (CAPE/CIN family, LCL, shear, SRH, Bunkers motion, effective inflow layer, SCP, fixed- and effective-layer STP), plus the analyst-voice interpretation that names the parameter-space regime. |
 | `derive/threat.py` | ~480 | Pure synthesis: combines the six source payloads (warnings, outlook, environment, MRMS, reports, lightning) into a rule-based threat level with quoted logic, ranked hazards, nearest storm signature, lightning summary, and attention window. No I/O — trivially testable. |
 | `derive/trend.py` | ~110 | Pure: reduces a series of forecast-hour environments to the discriminating quantities and describes their trajectory (intensifying / stabilizing / steady). No I/O. |
