@@ -90,6 +90,8 @@ uvx shearline --http --port 8741
 # serves at http://127.0.0.1:8741/mcp
 ```
 
+On macOS you can also double-click [`scripts/launch.command`](scripts/launch.command) to start the HTTP server in a Terminal window (honours `SHEARLINE_PORT`).
+
 The HTTP transport is built to be hosted: it emits one structured JSON log line
 per tool call (tool, coarse 1° lat/lon bucket, latency, `degraded` list, cache
 hit/miss) and applies a per-client token-bucket rate limit, returning `429` with
